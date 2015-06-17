@@ -6,4 +6,6 @@ This repository will be used as a hub for developing my programming skills. I wi
 Currently this consists of work from:
 
 - Eloquent JavaScript by Marijn Haverbeke
+http://eloquentjavascript.net/
 - NodeSchool - various workshops from many contributors
+http://nodeschool.io/

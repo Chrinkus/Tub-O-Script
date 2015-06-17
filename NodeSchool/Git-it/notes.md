@@ -50,3 +50,15 @@ Remote Control
 
     $ git pull <remote name> <branch name>
     $ git remote -v
+
+Forks & Clones
+
+- fork jlord/patchwork in browser
+
+    $ cd .. ==> backs out of current dir one level
+    $ git clone <URL from Github>
+    $ cd patchwork
+    $ git remote add upstream <jlord/patchwork URL>
+        - upstream
+            - common designation
+            - could use anything

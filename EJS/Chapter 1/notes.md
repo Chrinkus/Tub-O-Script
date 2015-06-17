@@ -1,4 +1,4 @@
-Chapter 1 - Values, Types, and Operators
+#Chapter 1 - Values, Types, and Operators
 
 6 basic types of Values
 - numbers
@@ -43,4 +43,30 @@ Unary Operators
     - unary: -18 ==> negative 18
 
 Boolean Values
-- 
+- true or false
+    - 3 > 2 ==> true
+    - 3 < 2 ==> false
+- comparisons
+    - > greater than
+    - < less than
+    - >= greater than or equal to
+    - <= less than or equal to
+    - == equal to
+    - != not equal to
+        - these last two use double symbols but are harder to work with
+        - prefer to use === and !==
+    - strings are comparable alphabetically
+        - uppercase < lowercase
+- Logical Operators
+    - && - and
+    - || - or
+    - ! - not (unary as in !true === false)
+
+The Grand Order
+- high ()e /%* +- ><== && || low
+
+Undefined Values
+- undefined & null
+- undefined is the value given to an initialized variable that is unassigned
+- null is similar
+    - null is a value we pass when we don't want to pass an actual value

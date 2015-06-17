@@ -5,9 +5,8 @@ This repository will be used as a hub for developing my programming skills. I wi
 
 ###Currently this consists of work from:
 
-Eloquent JavaScript by Marijn Haverbeke
-http://eloquentjavascript.net/
+Eloquent JavaScript by Marijn Haverbeke http://eloquentjavascript.net/
 
-NodeSchool
-http://nodeschool.io/
+NodeSchool http://nodeschool.io/
+* [Learn You The Node.js](https://github.com/workshopper/learnyounode)
 * [Git it](https://github.com/jlord/git-it)

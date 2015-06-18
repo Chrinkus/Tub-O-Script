@@ -21,17 +21,17 @@ Variables
     - may have numbers but not start with them
     - may contain $ and _
 - variables do not contain values, they grasp them
-
-    var powerLevel = 7000;
-    powerLevel = powerLevel + 2000;
-    console.log(powerLevel); //> 9000(!!)
-
+```javascript
+var powerLevel = 7000;
+powerLevel = powerLevel + 2000;
+console.log(powerLevel); //> 9000(!!)
+```
 - variable 'a' from above grasps the value 'undefined'
 - a single var statement may define multiple variables
-
-    var name = 'Chris', age = 36, height;
-    console.log(name + age + height); //> Chris36undefined
-
+```javascript
+var name = 'Chris', age = 36, height;
+console.log(name + age + height); //> Chris36undefined
+```
 Functions
 - a piece of a program wrapped in a value
 - can be applied (called, invoked) to run the wrapped program
@@ -42,24 +42,24 @@ Functions
 Control Flow
 - statements in a program execute from top to bottom
 - we can also use conditional execution using 'if' and a boolean expression
-
-    var language = prompt('Pick a programming language to learn', '');
-    if (language.toLowerCase() === 'javascript') {
-        alert('Good choice!');
-    }
-
+```javascript
+var language = prompt('Pick a programming language to learn', '');
+if (language.toLowerCase() === 'javascript') {
+    alert('Good choice!');
+}
+```
 - we can provide an alternative path with 'else'
     - also additional paths using 'else if'
-
-    var age = prompt('How old are you?', '0');
-    if (age < 18) {
-        alert('too young');
-    } else if (age > 60) {
-        alert('too old');
-    } else {
-        alert('lets play something M-rated');
-    }
-
+```javascript
+var age = prompt('How old are you?', '0');
+if (age < 18) {
+    alert('too young');
+} else if (age > 60) {
+    alert('too old');
+} else {
+    alert('lets play something M-rated');
+}
+```
 ###Loops
 
 While and Do

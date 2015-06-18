@@ -65,7 +65,7 @@ Boolean Values
 
 Ternary Operator
 - conditional operator
-- <condition> ? <if true> : <if false>
+- (condition) ? (if true) : (if false)
 
 The Grand Order
 - high ()e /%* +- ><== && || low

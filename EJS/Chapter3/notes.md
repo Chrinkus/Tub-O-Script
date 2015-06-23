@@ -57,7 +57,7 @@ function square(x) {
 ```
 - function declarations exist outside of top to bottom control flow
 - they are moved to the top of their scope and can be used by all code in it
-**Do NOT define a function inside of a conditional**
+- **Do NOT define a function inside of a conditional**
 *Apparently that's a thing*
 
 The Call Stack

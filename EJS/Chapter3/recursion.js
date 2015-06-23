@@ -1,6 +1,6 @@
 function isEven(number) {
     if (number < 0) {
-        return 'No negatives, Nancy';
+        return isEven(-number);
     }
     if (number < 2) {
         return (number === 0);

@@ -114,3 +114,32 @@ console.log(string[1]); // b
 ```
 
 The arguments Object
+- when a function is called, an object named arguments is added to the environment of the body
+    - this object contains all of the arguments passed to the function
+        - it may contain more or less arguments than the declared parameters of the function
+    - this object has a length property and assigns an index for each arg similar to an array
+        - is NOT an array insofar as it does not have access to other array methods
+```javascript
+// Were-Squirrel entry mechanism w/arguments object
+function addEntry(squirrel) { // only NEED to know if changed to squirrel
+    var entry = {events: [], squirrel: squirrel};
+    for (var i = 1; i < arguments.length; i++) { // i = 1 to skip first arg (squirrel)
+        entry.events.push(arguments[i]); // loop through and push however many args there are
+    }
+    journal.push(entry);
+}
+```
+
+The Math Object
+- has lots of mathy stuff. will delve further as we need to
+
+The Global Object
+- the global scope can be approached as an object
+- in browsers the global scope object is stored in the ```window``` variable
+```javascript
+var myVar = 10;
+console.log('myVar' in window); // true
+console.log(window.myVar); // 10
+```
+
+END OF CHAPTER

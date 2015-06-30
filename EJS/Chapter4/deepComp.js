@@ -16,6 +16,7 @@ function deepEqual(obj1, obj2) {
     return true;
 }
 // Vastly different from EJS solution
+// Does not test against null objects 
 
 //EJS tests
 var obj = {here: {is: 'an'}, object: 2};

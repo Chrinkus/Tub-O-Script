@@ -71,3 +71,12 @@ JSON
         - parses a string as JSON
             - optionally transforming the value produced by parsing
         - takes a JSON-encoded string and converts it to the value it encodes
+
+Filtering an Array
+- Array.prototype.filter()
+    - the filter() method creates a new array with all the elements that pass the test implemented by the provided function
+    ```javascript
+    arr.filter(callback[, thisArg])
+    ```
+    - callback
+        -

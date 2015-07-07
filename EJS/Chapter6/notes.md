@@ -121,3 +121,23 @@ Laying Out a Table
         - minWidth() returns a number indicating minimum width (in characters)
         - draw(width, height) returns array of length ```height``` which contains a series of strings ```width``` characters wide
 - comments will be written in the code of table.js
+
+Getters and Setters
+- some people never include non-method properties in interfaces
+    - instead using getSomething() and setSomething() methods
+        - end up writing and reading a lot more code
+    - get and set notation specifies functions to be run when property is read or written
+    - when a getter but no setter is defined, attempts to write the property are ignored
+
+Inheritance
+- intentional sharing of properties between objects and their prototypes
+    - any specialized properties may be overwritten in the individual object
+    - excellent for sharing methods without having to rewrite code
+- while encapsulation and polymorphism serve to separate code, inheritance ties code together
+- be mindful of potential pitfalls of inheritance
+    - it is suggested to use a pattern more along the lines of the UnderlinedCell
+
+The Instanceof Operator
+- binary operator used to test whether an object has a specified constructor
+
+END OF CHAPTER

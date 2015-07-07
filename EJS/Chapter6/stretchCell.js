@@ -1,3 +1,4 @@
+// Solution appended to bottom of table.js
 
 // EJS tests
 var sc = new StretchCell(new TextCell('abc'), 1, 2);

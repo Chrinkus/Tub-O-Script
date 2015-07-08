@@ -127,8 +127,9 @@ RTextCell.prototype.draw = function(width, height) {
     return result;
 };
 
-//console.log(drawTable(dataTable(MOUNTAINS)));
+console.log(drawTable(dataTable(MOUNTAINS)));
 
+/*
 function StretchCell(inner, width, height) {
     this.inner = inner;
     this.width = width;
@@ -148,7 +149,7 @@ var sc = new StretchCell(new TextCell('abc'), 1, 2);
 console.log(sc.minWidth()); // 3
 console.log(sc.minHeight()); // 2
 console.log(sc.draw(3, 2)); // ['abc', '   ']
-
+*/
 /*
 var pile = {
     elements: ['eggshell', 'orange peel', 'worm'],

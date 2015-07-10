@@ -1,8 +1,7 @@
 var MOUNTAINS = require('./mountains');
 
-// rows argument holds an array of arrays with each inner array representing a row of cells
 function rowHeights(rows) {
-    return rows.map(function(row) { // map each row
+    return rows.map(function(row) {
         return row.reduce(function(max, cell) {
             return Math.max(max, cell.minHeight());
         }, 0);
@@ -10,7 +9,7 @@ function rowHeights(rows) {
 }
 
 function colWidths(rows) {
-    return rows[0].map(function(_, i) { // _ variable name indicates an unused argument
+    return rows[0].map(function(_, i) {
         return rows.reduce(function(max, row) {
             return Math.max(max, row[i].minWidth());
         }, 0);
@@ -38,7 +37,7 @@ function drawTable(rows) {
     return rows.map(drawRow).join('\n');
 }
 
-function repeat(string, times) { // padding function
+function repeat(string, times) {
     var result = '';
     for (var i = 0; i < times; i++) {
         result += string;
@@ -46,7 +45,6 @@ function repeat(string, times) { // padding function
     return result;
 }
 
-// cell constructor
 function TextCell(text) {
     this.text = text.split('\n');
 }

@@ -1,8 +1,8 @@
 #Analysis of table.js Execution
-The example worked through in the chapter requires close examination to understand. There are different methods of inheritance and many higher-order function processes.
+The table example worked through in the chapter requires closer examination to be fully understood. There are different models of inheritance and many higher-order function processes.
 
 ##Higher-Order Constructs
-There are a few specific implementations of functions in the creation of this table that bear examination.
+There are a few specific implementations of functions in the creation of this table that are slightly different than other work from the book.
 
 The map() function is used frequently in slightly different contexts but always as a means of separating data for further process. Of particular interest is in the dataTable() function where two consecutive map()'s are employed to pick apart an array of objects.
 
@@ -41,3 +41,28 @@ The RTextCell constructor is written with more of a direct inheritance model by 
 In this case, the two constructors are virtually identical in purpose with the only difference being how they are padded. Though not a trivial feature it only requires the alteration of one method. This level of direct association lends itself well to the applied inheritance model.
 
 ##drawTable
+The drawTable function takes the output of the dataTable function as its only parameter. That argument, rows, is an array of 3 element arrays. Each element of the inner arrays are variations of the TextCell.
+```javascript
+// rows
+[ [ { inner: [Object] }, { inner: [Object] }, { inner: [Object] } ],
+  [ { text: [Object] }, { text: [Object] }, { text: [Object] } ],
+  [ { text: [Object] }, { text: [Object] }, { text: [Object] } ] ]
+```
+###rowHeights & minHeight
+The first statement of drawTable() defines a variable, heights, to hold the maximum height required for each row using reduce() with Math.max() and accessing the minHeight() method of the cell.
+```javascript
+var heights = [2, 1, 1, 1, ..., 1];
+```
+Looking at the ```this.text.length``` call of TextCell.prototype.minHeight to define height seems incorrect at first glance as text.length should be a lateral measurement of the string. However, the base constructor of TextCell uses the String.prototype.split() function to set the value of the text property to an ARRAY containing the text string.
+```javascript
+rows[1][2] = { text: ['Tanzania'] }
+```
+So ```this.text.length``` returns the length of the array (1).
+
+###colWidths & minWidth
+The second statement finds the largest required width of each column. While rowHeights could work on each 'row' array individually, each element shares a column not with its immediate array siblings but with the elements of the other arrays that share the same index position.
+The colWidths function uses the second argument to map to isolate the current index of the 'row' element. By specifying row[0] in the map call, the map function will only be called 3 times, once for each element of the inner arrays. Reduce is then called on the entire 'rows' array but only looking at the same index as the current map call.
+```javascript
+var widths = [12, 6, 13];
+```
+Examining the call to the minWidth method reveals an extra call to reduce within it. This extra call is in case there are multiple values in the text property array, though none of these situations exist in the data set.

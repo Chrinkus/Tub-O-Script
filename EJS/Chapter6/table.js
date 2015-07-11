@@ -109,6 +109,7 @@ function dataTable(data) {
             }
         });
     });
+
     return [headers].concat(body);
 }
 

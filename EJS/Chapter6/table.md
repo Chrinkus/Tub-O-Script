@@ -8,7 +8,7 @@ The map() function is used frequently in slightly different contexts but always 
 
 The reduce() function is used alongside the Math.max() function for sizing rows and cells to the greatest .length value of adjacent sets. Often an initial value of zero is passed which is tucked away at the end of the call.
 
-##dataTable
+##dataTable()
 The data from mountains.js enters the program as an array of objects organized as such:
 ```javascript
 [{name: 'Mountain', height: 1337, country: 'Mountain Land'}, { ... }]
@@ -40,7 +40,7 @@ The RTextCell constructor is written with more of a direct inheritance model by 
 
 In this case, the two constructors are virtually identical in purpose with the only difference being how they are padded. Though not a trivial feature it only requires the alteration of one method. This level of direct association lends itself well to the applied inheritance model.
 
-##drawTable
+##drawTable()
 The drawTable function takes the output of the dataTable function as its only parameter. That argument, rows, is an array of 3 element arrays. Each element of the inner arrays are variations of the TextCell.
 ```javascript
 // rows
@@ -48,7 +48,12 @@ The drawTable function takes the output of the dataTable function as its only pa
   [ { text: [Object] }, { text: [Object] }, { text: [Object] } ],
   [ { text: [Object] }, { text: [Object] }, { text: [Object] } ] ]
 ```
-###rowHeights & minHeight
+The output of drawTable is:
+```javascript
+return rows.map(drawRow).join('\n');
+```
+First I'll look at the two variables defined at the beginning of drawTable() then at drawRow(), the function used as the callback to map.
+####rowHeights() & minHeight()
 The first statement of drawTable() defines a variable, heights, to hold the maximum height required for each row using reduce() with Math.max() and accessing the minHeight() method of the cell.
 ```javascript
 var heights = [2, 1, 1, 1, ..., 1];
@@ -59,10 +64,30 @@ rows[1][2] = { text: ['Tanzania'] }
 ```
 So ```this.text.length``` returns the length of the array (1).
 
-###colWidths & minWidth
+####colWidths() & minWidth()
 The second statement finds the largest required width of each column. While rowHeights could work on each 'row' array individually, each element shares a column not with its immediate array siblings but with the elements of the other arrays that share the same index position.
+
 The colWidths function uses the second argument to map to isolate the current index of the 'row' element. By specifying row[0] in the map call, the map function will only be called 3 times, once for each element of the inner arrays. Reduce is then called on the entire 'rows' array but only looking at the same index as the current map call.
 ```javascript
 var widths = [12, 6, 13];
 ```
 Examining the call to the minWidth method reveals an extra call to reduce within it. This extra call is in case there are multiple values in the text property array, though none of these situations exist in the data set.
+
+####drawRow()
+As the callback to map, drawRow has access to a few arguments. Specifically, the current element (row) and the index of that element (rowNum). A variable called blocks is created that corresponds to each row. The difference beign that the draw method is called on each cell within each row and padded according to the computed maximum widths and heights.
+
+In this case, the index of each row is used to access the corresponding value in ```heights``` and the index of each cell within is matched to the index of ```widths```
+```javascript
+return cell.draw(widths[colNum], heights[rowNum]);
+```
+
+The latter half of drawRow is tough to follow. At this point, ```blocks``` is an array of arrays. The first pass through the map attends to the header row which contains the UnderlinedCell objects. For clarity's sake I'm skipping to the second pass which will display the process more clearly. At this point, we have:
+```javascript
+var blocks = [['Kilimanjaro '], ['  5895'], ['Tanzania     ']]
+```
+Each pass through drawRow focuses on the [0] index of ```blocks```, in this case ```['Kilimanjaro ']```. This is for the circumstance where a cell's height may be greater than 1 as in the UnderlinedCell case. Otherwise, the map 'loop' runs once. That one pass calls drawLine on the whole ```blocks``` variable passing the index value with it to pick each string out of its enclosed array.
+
+drawLine extracts each string and adds a space to separate the columns. At the end of the pass the returning ```block``` also receives a join('\n') to start the next block[0] index on its own line. This is only for the special case of a row's height value being greater than one. The second join('\n') provides the newline for the single height rows.
+
+##Inheritance Models
+**To be comoleted at another time**

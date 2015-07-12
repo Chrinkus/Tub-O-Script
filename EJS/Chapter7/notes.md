@@ -33,3 +33,7 @@ console.log(grid[2 + (1 * 3)]); // bottom right
 - we will use the latter method
 
 ###A Critter's Programming Interface
+- each critter object has an act method
+    - when called it returns an action
+        - an action is an object with a type property
+            - ie: 'move'

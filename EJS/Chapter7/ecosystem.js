@@ -316,7 +316,7 @@ PlantEater.prototype.act = function(context) {
 // Bringing the World to Life
 var valley = new LifelikeWorld(
     ["############################",
-     "#####                 ######",
+     "#####         @       ######",
      "##   ***                **##",
      "#   *##**         **  O  *##",
      "#    ***     O    ##**    *#",
@@ -324,12 +324,13 @@ var valley = new LifelikeWorld(
      "#                 ##**     #",
      "#   O       #*             #",
      "#*          #**       O    #",
-     "#***        ##**    O    **#",
+     "#***    @   ##**    O    **#",
      "##****     ###***       *###",
      "############################"],
     {'#': Wall,
      'O': PlantEater,
-     '*': Plant}
+     '*': Plant,
+     '@': Tiger}
 );
 for (var i = 0; i < 5; i++) {
     valley.turn();
@@ -342,6 +343,7 @@ for (var i = 0; i < 5; i++) {
 // critter = current critter - turn(forEach())
 // vector = location of critter on grid - turn(forEach())
 // action = critter.act(new View(this, vector)) - LifelikeWorld.letAct()
+/* Movement still seems random
 actionTypes.migrate = function(critter, vector, action) {
     var heading = this.checkDestination(action, vector);
     if (heading == null || critter.energy <= 1) {
@@ -360,26 +362,47 @@ actionTypes.migrate = function(critter, vector, action) {
             n = -n;
         } while(n < 0);
     }
-}
+    critter.lastDir = null;
+}*/
 
 function SmartPlantEater() {
     this.energy = 20;
-    this.lastDir = null;
+    this.full = 80;
+    this.taste = '*';
+    this.lastDir = 's';
 }
 SmartPlantEater.prototype.act = function(context) {
     var space = context.find(' ');
-    if (this.energy > 60 && space) {
+    if (this.energy > this.full && space) {
         return {type: 'reproduce', direction: space};
     }
-    var plant = context.find('*');
-    if (plant && this.energy < 50) {
-        return {type: 'eat', direction: plant};
+    var food = context.find(this.taste);
+    if (food && this.energy < this.full) {
+        return {type: 'eat', direction: food};
     }
-    if (this.lastDir != null) {
-        return {type: 'migrate', direction: this.lastDir};
+    // hard-coded migrate
+    var heading = this.lastDir;
+    for (var i = 0; i <= 2; i++) {
+        var n = i;
+        do {
+            if (context.look(dirPlus(heading, n)) === ' ') {
+                this.lastDir = (dirPlus(heading, n));
+                return {type: 'move', direction: this.lastDir};
+            }
+            n = -n;
+        } while(n < 0);
     }
     if (space) {
         this.lastDir = space;
         return {type: 'move', direction: space};
     }
 };
+
+// Predators
+function Tiger() {
+    this.energy = 50;
+    this.full = 120;
+    this.taste = 'O';
+    this.lastDir = randomElement(directionNames);
+}
+Tiger.prototype = Object.create(SmartPlantEater.prototype);

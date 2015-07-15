@@ -37,3 +37,6 @@ console.log(grid[2 + (1 * 3)]); // bottom right
     - when called it returns an action
         - an action is an object with a type property
             - ie: 'move'
+
+**Abort notes**
+- typing out the example by hand and reading along with chapter is much more effective

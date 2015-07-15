@@ -335,3 +335,51 @@ for (var i = 0; i < 5; i++) {
     valley.turn();
     console.log(valley.toString());
 }
+
+// Artificial Stupidity
+
+// this = world - turn()
+// critter = current critter - turn(forEach())
+// vector = location of critter on grid - turn(forEach())
+// action = critter.act(new View(this, vector)) - LifelikeWorld.letAct()
+actionTypes.migrate = function(critter, vector, action) {
+    var heading = this.checkDestination(action, vector);
+    if (heading == null || critter.energy <= 1) {
+        return false;
+    }
+    for (var i = 0; i < 2; i++) {
+        var n = i;
+        do {
+            var check = dirPlus(heading, n);
+            if (this.grid.get(check) == ' ') {
+                critter.energy -= 1;
+                this.grid.set(vector, null);
+                this.grid.set(check, critter);
+                return true;
+            }
+            n = -n;
+        } while(n < 0);
+    }
+}
+
+function SmartPlantEater() {
+    this.energy = 20;
+    this.lastDir = null;
+}
+SmartPlantEater.prototype.act = function(context) {
+    var space = context.find(' ');
+    if (this.energy > 60 && space) {
+        return {type: 'reproduce', direction: space};
+    }
+    var plant = context.find('*');
+    if (plant && this.energy < 50) {
+        return {type: 'eat', direction: plant};
+    }
+    if (this.lastDir != null) {
+        return {type: 'migrate', direction: this.lastDir};
+    }
+    if (space) {
+        this.lastDir = space;
+        return {type: 'move', direction: space};
+    }
+};

@@ -60,6 +60,7 @@ try {
     - try...catch...finally
 
 **for**
+
 *Specifically regarding the optional use of expressions*
 - The for statement creates a loop that consists of three optional expressions, enclosed in parenthesis and separated by semicolons, followed by a statement or a set of statements executed in the loop.
 ```
@@ -84,8 +85,8 @@ for (; i < 9; i++) {
     // more statements
 }
 ```
-    - optional condition block
-        - if omitting the conditional you must provide means of breaking the loop in the body
+- optional condition block
+    - if omitting the conditional you must provide means of breaking the loop in the body
 ```javascript
 for (var i = 0;; i++) {
     console.log(i);
@@ -93,7 +94,7 @@ for (var i = 0;; i++) {
     // more statements
 }
 ```
-    - all three blocks omitted. Must provide means of breaking and modification of a variable.
+- all three blocks omitted. Must provide means of breaking and modification of a variable.
 ```javascript
 var i = 0;
 

@@ -99,3 +99,91 @@ console.log(testVector()); // everything ok
     ```
 
 ###Exceptions
+*Example in badInput.js*
+- modern javascript environments allow the instances of the Error constructor to also gather information about the call stack that existed when the exception was created
+    - stack trace
+        - tells us function where problem occurred and which functions led up to it
+
+###Cleaning Up After Exceptions
+*Example in context.js*
+- try statements also have a ```finally``` feature
+    - no matter what happens in the try block, the finally block will execute
+    - 'clean-up' code
+
+###Selective Catching
+- javascript doesn't provide support for selectively catching exceptions
+    - either catch all or none
+- the following attempts to keep calling ```promptDirection``` until a valid response is provided
+    - the misspelled function call causes an 'undefined variable' error
+        - by ignoring the catch error (e) we assume bad input for errors
+```javascript
+for (;;) {
+    try {
+        var dir = promtDirection('Where?'); // typo
+        console.log('You chose ', dir);
+        break;
+    } catch (e) {
+        console.log('Not a valid direction. Try again.');
+    }
+}
+```
+- don't blanket catch exceptions unless that is the goal
+- instead check in the catch block if the exception is the one we expected and throw it if its not
+    - could check message property but thats not cool
+    - define a new type of error and use ```instanceOf``` to verify it
+```javascript
+function InputError(message) {
+    this.message = message;
+    this.stack = (new Error()).stack;
+}
+InputError.prototype = Object.create(Error.prototype);
+InputError.prototype.name = 'InputError';
+```
+- has a name because standard error types all do
+- now promptDirection can throw this error
+    - loop can catch it specifically
+```javascript
+var result = prompt(question) {
+    var result = prompt(question, '');
+    if (result.toLowerCase() == 'left') return 'L';
+    if (result.toLowerCase() == 'right') return 'R';
+    throw new InputError('Invalid direction: ' + result);
+}
+for (;;) {
+    try {
+        var dir = promptDirection('Where?');
+        console.log('You chose ', dir);
+        break;
+    } catch (e) {
+        if (e instanceOf InputError) {
+            console.log('Not a valid direction. Try again.');
+        } else {
+            throw e;
+        }
+    }
+}
+```
+- running with typo will cause catch to run ```else``` code
+
+###Assertions
+- Assertions are a tool to help detect programmer errors
+```javascript
+function AssertionFailed(message) {
+    this.message = message;
+}
+AssertionFailed.prototype = Object.create(Error.prototype);
+
+function assert(test, message) {
+    if (!test) {
+        throw new AssertionFailed(message);
+    }
+}
+function lastElement(array) {
+    assert(array.length > 0, 'empty array in lastElement');
+    return array[array.length - 1];
+}
+```
+- usually, the lastElement function would return undefined on an empty array
+    - this way, we catch the error at the point of the mistake rather than waiting till we try to operate on the returned value or further down the road
+
+END OF CHAPTER

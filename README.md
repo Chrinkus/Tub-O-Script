@@ -6,6 +6,7 @@ This repository will be used as a hub for developing my programming skills. I wi
 ###Currently this consists of work from:
 
 Eloquent JavaScript by Marijn Haverbeke http://eloquentjavascript.net/
+* With definitions from the [Mozilla Developer Network JavaScript reference](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference)
 
 NodeSchool http://nodeschool.io/
 * [Learn You The Node.js](https://github.com/workshopper/learnyounode)

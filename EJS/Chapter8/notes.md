@@ -76,3 +76,26 @@ console.log(testVector()); // everything ok
 - there exist testing frameworks (test suites) that provide better/easier means of testing
 
 ###Debugging
+- modern browsers come with the ability to set a specific breakpoint in code
+    - causes execution of code to pause at the specified point and allow you to examine the values of variables at that point
+    - look it up
+- can also insert the statement ```debugger``` and turn on developer tools
+
+###Error Propagation
+- communicating with the outside world presents the opportunity for invalid input
+- just crashing is not acceptable for big boy programs
+    - we can take bad input in stride and keep running
+    - report the error to the user and then give up
+- one option is to return a special value such as null or undefined when incorrect input is provided
+    - some functions return many types of values so this method is not great
+    - this can also lead to cluttered code
+    ```javascript
+    function promptNumber(question) {
+        var result = Number(prompt(question, ''));
+        if (isNaN(result)) return null;
+        else return result;
+    }
+    console.log(promptNumber('How many trees do you see?'));
+    ```
+
+###Exceptions

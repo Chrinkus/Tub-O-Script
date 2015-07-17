@@ -10,7 +10,26 @@ function primitiveMultiply(a, b) {
 }
 
 function reliableMultiply(a, b) {
-    // my code
+    // my code - recursive
+    try {
+        return primitiveMultiply(a, b);
+    } catch (e) {
+        if (e instanceof MultiplicatorUnitFailure) {
+            return reliableMultiply(a, b);
+        } else {
+            throw e;
+        }
+    }
+    /* EJS Solution - infinite for
+    for (;;) {
+        try {
+            return primitiveMultiply(a, b);
+        } catch (e) {
+            if (!(e instanceof MultiplicatorUnitFailure)) {
+                throw e;
+            }
+        }
+    }*/
 }
 
 // EJS Test

@@ -41,15 +41,17 @@ console.log(/[0-9]/.test('in 1992')); // true
 - Inside square brackets a dash between two characters represents a range
     - the ordering is determined by the character's Unicode number
 - there are a number of common character groups that have built in shortcuts using \
-| Shortcut | Represents |
-| :------------- | :------------- |
-| \d | Any digit character |
-| \w | Any alphanumeric character |
+
+| SC | Represents                                          |
+| :- | :-------------------------------------------------- |
+| \d | Any digit character                                 |
+| \w | Any alphanumeric character                          |
 | \s | Any whitespace character (space, tab, newline, etc) |
-| \D | Any NON-digit |
-| \W | Any non-alphanumeric |
-| \S | Any non-whitespace |
-| . | Any character except newline |
+| \D | Any NON-digit                                       |
+| \W | Any non-alphanumeric                                |
+| \S | Any non-whitespace                                  |
+| .  | Any character except newline                        |
+
 - lowercase are inclusive, uppercase are exclusive
 - when used between square brackets the period (.) loses its special meaning as do other similar chars
     - [\d.] means any digit or a period character

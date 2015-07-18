@@ -63,3 +63,31 @@ console.log(notBinary.test('110110102001010')); // true
 ```
 
 ###Repeating Parts of a Pattern
+- placing a plus (+) after something in a regexp it indicates the element may be repeated more than once
+```javascript
+console.log(/'\d+'/.test("'123'")); // true
+console.log(/'\d+'/.test("''")); // false
+console.log(/'\d*'/.test("'123'")); // true
+console.log(/'\d*'/.test("''")); // true
+```
+- the star (\*) has a similar meaning but also allows the pattern to match zero times
+- a question mark indicates a part of the pattern is optional
+    - it may occur zero or one time
+```javascript
+var neighbor = /neighbou?r/; // u is allowed but not necessary
+console.log(neighbor.test('neighbour')); // true
+console.log(neighbor.test('neighbor')); // true
+```
+- to be more precise about the number of repetitions we use braces ({})
+    - a {4} after an element requires it to occur exactly 4 times
+    - we can specify a range using {2,4} (no spaces)
+        - element must occur 2 times but no more than 4 times
+```javascript
+var dateTime = /\d{1,2}-\d{1,2}-\d{4} \d{1,2}:\d{2}/;
+console.log(dateTime.test('30-1-2003 8:45')); // true
+```
+- finally, we can define open-ended ranges by omitting either side of the comma
+    - {,5} means zero to 5 times
+    - {5,} means five or more times
+
+###Grouping Subexpressions

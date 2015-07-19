@@ -91,3 +91,28 @@ console.log(dateTime.test('30-1-2003 8:45')); // true
     - {5,} means five or more times
 
 ###Grouping Subexpressions
+- to use an operator (\* or +) on more than one element in the same expression we use parentheses
+```javascript
+var cartoonCrying = /boo+(hoo+)+/i;
+console.log(cartoonCrying.test('Boohoohooohoo')); // true
+```
+- when following a letter as in the ```+``` after boo and hoo the operator applies to that letter
+    - when following a closing parentheses as in the final '+' the whole group within may be matched
+- the ```i``` at the end of the regexp makes the matching pattern case-insensitive
+    - thats how the capital 'B' matches
+
+###Matches and Groups
+- the ```test``` method is a simple way to match a regexp
+    - returns true or false and nothing else
+- regexp's also have an ```exec``` method
+    - returns null if no match is found
+    - returns an object with information about the match if it does
+```javascript
+var match = /\d+/.exec('one two 100');
+console.log(match); // ['100']
+console.log(match.index); // 8
+```
+- strings have a ```match``` method that behaves similarly
+```javascript
+console.log('one two 100'.match(/\d+/)); // ['100']
+```

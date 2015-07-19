@@ -60,8 +60,9 @@ $ ls
 keyboard.txt monitor.txt mouse.txt
 ```
 
-###Options
-- HyphenLetter
+#Unit 2 - Viewing and Changing the File System
+
+- Options
     - while ```ls``` lists all files and directories adding ```-a``` as an option modifies its behavior
         - ```ls -a``` also lists all files and directories that start with a dot (.)
     - ```-a``` lists all contents, including hidden files and directories

@@ -11,3 +11,6 @@ Eloquent JavaScript by Marijn Haverbeke http://eloquentjavascript.net/
 NodeSchool http://nodeschool.io/
 * [Learn You The Node.js](https://github.com/workshopper/learnyounode)
 * [Git it](https://github.com/jlord/git-it)
+
+Codecademy https://www.codecademy.com/learn
+* [Command Line](https://www.codecademy.com/en/courses/learn-the-command-line)

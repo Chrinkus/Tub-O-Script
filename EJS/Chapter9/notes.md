@@ -40,18 +40,14 @@ console.log(/[0-9]/.test('in 1992')); // true
 ```
 - Inside square brackets a dash between two characters represents a range
     - the ordering is determined by the character's Unicode number
-- there are a number of common character groups that have built in shortcuts using \
-
-| SC | Represents                                          |
-| :- | :-------------------------------------------------- |
-| \d | Any digit character                                 |
-| \w | Any alphanumeric character                          |
-| \s | Any whitespace character (space, tab, newline, etc) |
-| \D | Any NON-digit                                       |
-| \W | Any non-alphanumeric                                |
-| \S | Any non-whitespace                                  |
-| .  | Any character except newline                        |
-
+- there are a number of common character groups that have built in shortcuts using '\\'
+    - \d - Any digit character
+    - \w - Any alphanumeric character
+    - \s - Any whitespace character (space, tab, newline, etc)
+    - \D - Any NON-digit
+    - \W - Any non-alphanumeric
+    - \S - Any non-whitespace
+    - . - Any character except newline
 - lowercase are inclusive, uppercase are exclusive
 - when used between square brackets the period (.) loses its special meaning as do other similar chars
     - [\d.] means any digit or a period character
@@ -115,4 +111,25 @@ console.log(match.index); // 8
 - strings have a ```match``` method that behaves similarly
 ```javascript
 console.log('one two 100'.match(/\d+/)); // ['100']
+```
+- the array that exec() returns always contains the whole match as the first element
+    - any subexpression matches follow as additional indexes
+```javascript
+var quotedText = /'([^']*)'/;
+console.log(quotedText.exec("she said 'hello'")); // ["'hello'", "hello"]
+```
+- When a group does not end up being matched, its position in the output array will hold ```undefined```
+    - if a group matches multiple times, only the last match ends up in the array
+```javascript
+console.log(/bad(ly)?/.exec('bad')); // ["bad", undefined]
+console.log(/(\d)+/.exec("123")); // ["123", "3"]
+```
+- exec() is great for extracting substrings and working with them
+
+###The Date Type
+- Date is an object type
+    - creating a Date object using ```new``` produces the current date and time
+```javascript
+console.log(new Date());
+// Mon Jul 20 2015 21:53:27 GMT-0500 (CDT)
 ```

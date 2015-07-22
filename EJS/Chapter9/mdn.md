@@ -56,3 +56,12 @@ str.match(regexp)
         - A regular expression object. If a non-RegExp object obj is passed, it is implicitly converted to a RegExp by using ```new RegExp(obj)```.
 - Returns
     - An array containing the matched results or null if there were no matches.
+
+**Date.prototype**
+- The Date.prototype property represents the prototype for the Date constructor.
+```
+new Date();
+new Date(value);
+new Date(dateString);
+new Date(year, month[, day[, hour[, minutes[, seconds[, milliseconds]]]]]);
+```

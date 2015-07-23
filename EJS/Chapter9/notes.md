@@ -127,9 +127,28 @@ console.log(/(\d)+/.exec("123")); // ["123", "3"]
 - exec() is great for extracting substrings and working with them
 
 ###The Date Type
+*Code examples found in date.js*
 - Date is an object type
     - creating a Date object using ```new``` produces the current date and time
-```javascript
-console.log(new Date());
-// Mon Jul 20 2015 21:53:27 GMT-0500 (CDT)
-```
+    - can pass arguments to create an object for a specific time
+        - single numeric arg - number of milliseconds after unixtime
+            - the ```getTime``` method produces the number of milliseconds from unixtime for the Date object it is called upon
+        - two numeric args - year, month w/00:00:00 for the time
+            - **Important** - month is zero-index based, all others start at 1
+                - Jan = 0, Feb = 1, Mar = 2, etc...
+        - three plus args - year, month, day, hour, minutes, seconds, milliseconds
+    - a date-string may be passed so long as it conforms to one of two specs
+        - RFC 2822
+            - year, month, day in any order separated by a space
+                - month as word accepted in any order, as number only after year
+                - time as 00:00:00
+        - ISO8601
+            - defaults to UTC then adjusts to local time
+            - YYYY-MM-DDTHH:mm:ss.sssZ
+                - "T" is literal used to signify beginning of the time section
+            - Z is time-zone offset
+                - may be appended as 'GMT-05:00' or 'GMT+02:30' to shorter versions of above pattern
+    - Date objects provide getter methods for each component
+        - getFullYear, getMonth, getDate, getHours, getMinutes, getSeconds
+
+###Word and String Boundaries

@@ -152,3 +152,30 @@ console.log(/(\d)+/.exec("123")); // ["123", "3"]
         - getFullYear, getMonth, getDate, getHours, getMinutes, getSeconds
 
 ###Word and String Boundaries
+- We can enforce that the match must span the whole string with ^ and $
+    - the caret (^) indicates the beginning of the string
+    - the dollar sign ($) indicates the end of a string
+        - so ```/^\d+$/``` matches a string consisting of 1 or more digits
+        - ```/^!/``` matches any string that begins with an exclamation mark
+- we can also specify a word boundary with ```\b```
+    - a word boundary can be the beginning or end of a string or any point where a word character, ```\w```, neighbors a non-word character
+    - a boundary marker does not represent a character, just a type condition
+```javascript
+console.log(/cat/.test('concatenate')); // true
+console.log(/\bcat\b/.test('concatenate')); // false
+```
+
+###Choice Patterns
+- to have a pattern accept different options we can use the pipe (|) to separate the possible choices
+```javascript
+var animalCount = /\b\d+ (pig|cow|chicken)s?\b/;
+console.log(animalCount.test('15 pigs')); // true
+console.log(animalCount.test('15 pigchickens')); // false
+```
+
+###The Mechanics of Matching
+- the flow through the above choice pattern code is involved
+    - at the 'choice' the expression will go as far as it can through each option till it finds its first match
+        - if multiple paths can be successful only the first will match and satisfy the test
+
+###Backtracking

@@ -65,3 +65,26 @@ new Date(value);
 new Date(dateString);
 new Date(year, month[, day[, hour[, minutes[, seconds[, milliseconds]]]]]);
 ```
+
+**String.prototype.replace**
+- The replace() method returns a new string with some or all matches of a pattern replaced by a ```replacement```. The pattern can be a string or a RegExp, and the replacement can be a string or a function to be called for each match.
+```
+str.replace(regexp|substr, newSubstr|function[, flags])
+```
+- Parameters
+    - regexp (pattern)
+        - a RegExp object. The match is replaced by the return value of parameter \#2
+    - substr (pattern)
+        - A String that is to be replaced by newSubstr.
+    - newSubstr (replacement)
+        - the String that replaces the substring received from parameter \#1. A number of special replacement patterns are supported.
+    - function (replacement)
+        - A function to be invoked to create the new substring (to put in place of the substring received from parameter \#1).
+            - arguments
+                - match - the matched substring
+                - p1, p2, ... pn - The nth parenthesized submatch string, provided the first argument to replace() was a RegExp object. (Corresponds to $1, $2, etc)
+                - offset - The zero-indexed location of the matched substring within the total string being examined
+                - string - the total string being examined
+    - flags
+        - a string specifying a combination of regular expression flags
+            - don't do this

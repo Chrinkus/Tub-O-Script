@@ -179,3 +179,29 @@ console.log(animalCount.test('15 pigchickens')); // false
         - if multiple paths can be successful only the first will match and satisfy the test
 
 ###Backtracking
+```javascript
+/\b([01]+b|\d+|[\da-f]h)\b/
+```
+- the above matches either a binary number followed by a 'b', a decimal number, or a hexadecimal number follwed by an 'h'
+    - when matching a type of number value to this expression the branches will be tested from left to right until a match is found or all three reject the string
+```javascript
+/^.*x/
+```
+- when evaluating the above expression, each element will be tested on the entire string until it moves on
+    - the ```.*``` will try to match the whole string before realizing it needs to find an 'x' as well
+        - the star will reach the end of the string then work backwards looking for an 'x' one character at a time
+            - this is backtracking
+- due to backtracking some regexp's can end up taking a long time to evaluate
+    - ```/([01]+)+b/``` is a test for a binary number that can loop over on itself many times
+
+###The replace Method
+- the replace method of the String.prototype replaces part of a string with another string
+```javascript
+console.log('papa'.replace('p', 'm')); // mapa
+```
+- the first argument can also be a regular expression
+- to change more than the first match we can add the 'g' or global flag to replace all matches
+```javascript
+console.log('Borobudur'.replace(/[ou]/, 'a')); // Barobudur
+console.log('Borobudur'.replace(/[ou]/g, 'a')); // Barabadar
+```

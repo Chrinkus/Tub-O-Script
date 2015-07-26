@@ -205,3 +205,34 @@ console.log('papa'.replace('p', 'm')); // mapa
 console.log('Borobudur'.replace(/[ou]/, 'a')); // Barobudur
 console.log('Borobudur'.replace(/[ou]/g, 'a')); // Barabadar
 ```
+- using regexp's with the replace() method allows us to refer back to matched groups
+```javascript
+console.log('Hopper, Grace\nMcCarthy, John\nRitchie, Dennis'
+            .replace(/([\w ]+), ([\w ]+)/g, '$2 $1'));
+// Grace Hopper
+// John McCarthy
+// Dennis Ritchie
+```
+- the '$' in the above code can be used to refer to the mathced groups in the pattern
+    - can use $1, $2, up to $9
+    - $& refers to the whole match
+- examples of using a function as the second argument to replace() are found in regexp.js
+    - the important thing is knowing which arguments will be passed to the callback
+
+###Greed
+- due to the nature of backtracking, the repetition operators in regexp's are greedy
+    - repetition operators - +, \*, ?, and {}
+    - they try to match the whole string then move back from there, taking as much as they can
+```javascript
+function stripComments(code) {
+    return code.replace(/\/\/.*|\/\*[^]*\*\//g, '');
+}
+console.log(stripComments('1 + /* 2 */3')); // 1 + 3
+console.log(stripComments('x = 10;// ten!!')); // x = 10;
+console.log(stripComments('1 /* a */+/* b */ 1')); // 1 1
+```
+- in the last case, [^]* consumes the entire string then backtracks looking for the closing '\*/'
+    - it hits on the second block comment closer and returns victorious
+- to make a repetition operator non-greedy apply a question mark after them to make them match as little as possible
+    - +?, \*?, ??, {}?
+- this is a common cause of many bugs with RegExp's

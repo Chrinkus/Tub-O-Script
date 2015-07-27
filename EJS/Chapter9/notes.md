@@ -235,4 +235,26 @@ console.log(stripComments('1 /* a */+/* b */ 1')); // 1 1
     - it hits on the second block comment closer and returns victorious
 - to make a repetition operator non-greedy apply a question mark after them to make them match as little as possible
     - +?, \*?, ??, {}?
+```javascript
+function stripComments(code) {
+    return code.replace(/\/\/.*[^]*?\*\//g, '');
+}
+```
 - this is a common cause of many bugs with RegExp's
+
+###Dynamically Creating RegExp Objects
+*Examples in the regexp.js file*
+- can use variables in a regexp constructor to build patterns off of unknown strings
+- when constructing regexp's from a string, remember to escape special sequences
+
+###The search Method
+- The ```indexOf``` method on strings cannot be called with a regular expression
+    - the method ```search()``` can be used instead
+        - similar to indexOf it returns the index at which the regexp match occurs or -1
+```javascript
+console.log('  word'.search(/\S/)); // 2
+console.log('   '.search(/\S/)); // -1
+```
+- unlike indexOf there is no way to start the search at a given offset
+
+###The lastIndex Property

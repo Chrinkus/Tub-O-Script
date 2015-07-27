@@ -88,3 +88,13 @@ str.replace(regexp|substr, newSubstr|function[, flags])
     - flags
         - a string specifying a combination of regular expression flags
             - don't do this
+
+**String.prototype.search**
+- The search() method executes a search for a match between a regular expression and this String object.
+```
+str.search(regexp)
+```
+- Parameters
+    - regexp
+        - A regular expression object. If a non-RegExp object obj is passed, it is implicitly converted to a RegExp by using ```new RegExp(obj)```.
+- If successful, search() returns the index of the first match of the regular expression inside the string. Otherwise, it returns -1.

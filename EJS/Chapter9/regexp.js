@@ -28,3 +28,22 @@ function minusOne(match, amount, unit) {
 console.log(stock.replace(/(\d+) (\w+)/g, minusOne));;
 // no lemon, 1 cabbage, and 100 eggs
 */
+
+//Dynamic RegExp
+/*
+var name = 'harry';
+var text = 'Harry is a suspicious character.';
+var regexp = new RegExp('\\b(' + name + ')\\b', 'gi');
+console.log(text.replace(regexp, '_$1_'));
+*/
+/*
+var name = 'dea+hl[]rd'; // given after escaped and regexp are written
+var text = 'This dea+hl[]rd guy is super annoying.'; // generated text
+var escaped = name.replace(/[^\w\s]/g, '\\$&');
+var regexp = new RegExp('\\b(' + escaped + ')\\b', 'gi');
+console.log(text.replace(regexp, '_$1_'));
+*/
+
+// search method
+console.log('  word'.search(/\S/)); // 2
+console.log('   '.search(/\S/)); // -1

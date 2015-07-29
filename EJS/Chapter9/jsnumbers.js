@@ -1,5 +1,5 @@
 // Expression
-var number = /^...$/;
+var number = /^(\+|-)?(\d+\.?|\.\d+)\d*(e(\+|-)?\d+)?$/i;
 
 //EJS Tests
 ['1', '-1', '+15', '1.55', '.5', '5.', '1.3e2', '1E-4', '1e+12'].forEach(function(s) {

@@ -255,6 +255,50 @@ function stripComments(code) {
 console.log('  word'.search(/\S/)); // 2
 console.log('   '.search(/\S/)); // -1
 ```
-- unlike indexOf there is no way to start the search at a given offset
+- unlike indexOf there is no way to start the search at a given offset, however..
 
 ###The lastIndex Property
+- the exec method does have a way to start at a given offset but not a very convenient one
+    - all RegExp objects have properties
+        - source - string that expression was created from
+        - lastIndex - controls where the next match will start from
+            - only when global (g) option is enabled
+            - only through the exec method
+```javascript
+var pattern = /y/g;
+pattern.lastIndex = 3;
+var match = pattern.exec('xyzzy');
+console.log(match.index);
+//> 4
+console.log(pattern.lastIndex);
+//> 5
+```
+- if the match was successful, exec automatically updates lastIndex to the point after the match
+    - if no match was found, lastIndex is reset to 0 (default)
+- when using the 'g' option for multiple exec calls, the auto updates may cause problems
+```javascript
+var digit = /\d/g;
+console.log(digit.exec('here it is: 1'));
+//> ["1"]
+console.log(digit.exec('and now: 1'));
+//> null
+```
+- the global option also affects how String.prototype.match works
+    - with 'g' enabled, mathc will return an array with all matches from a string
+- the only times we need to use 'g' is calls to replace and when we NEED to use lastIndex
+
+###Looping Over Matches
+- we can use the lastIndex updating mechanism of exec as an iterator in a loop
+```javascript
+var input = 'A string with 3 numbers in it... 42, and 88.';
+var number = /\b(\d+)\b/g;
+var match;
+while (match = number.exec(input)) {
+    console.log('Found', match[1], 'at', match.index);
+}
+//> Found 3 at 14
+//> Found 42 at 33
+//> Found 88 at 40
+```
+
+###Parsing an INI File

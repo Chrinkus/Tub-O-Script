@@ -302,3 +302,68 @@ while (match = number.exec(input)) {
 ```
 
 ###Parsing an INI File
+- Definition from Wikipedia
+    - The INI file format is an informal standard for configuration files for some platforms or software. INI files are simple text files with a basic structure composed of sections, properties, and values.
+```
+searchengine=http://www.google.com/search?q=$1
+spitefulness=9.7
+; comments are preceded by a semicolon...
+; each section concerns an individual enemy
+[larry]
+fullname=Larry Doe
+type=kindergarten bully
+website=http://www.geocities.com/CapeCanaveral/11451
+
+[gargamel]
+fullname=Gargamel
+type=evil sorcerer
+outputdir=/home/marijn/enemies/gargamel
+```
+- rules of format
+    - Blank lines and lines starting with a semicolon are ignored
+    - Lines wrapped in [ and ] start a new section
+    - Lines containing an alphanumeric identifier followed by an = character add a setting to the current section
+    - Anything else is invalid
+- convert above string into an array of objects each with a name property and an array of settings
+    - need one for each section and one for global settings
+- line by line - string.split('\n')
+    - some operating systems use carriage returns with newlines
+        - split also takes a regexp we can use ```/\r?\n/```
+```javascript
+function parseINI(string) {
+    // Start with an object to hold the top-level fields
+    var currentSection = {name: null, fields: []};
+    var categories = [currentSection];
+
+    string.split(/\r?\n/).forEach(function(line) {
+        var match;
+        if (/^\s*(;.*)?$/test(line)) {
+            return;
+        } else if (match = line.match(/^\[(.*)\]$/)) {
+            currentSection = {name: match[1], fields: []};
+            categories.push(currentSection);
+        } else if (match = line.match(/^(\w+)=(.*)$/)) {
+            currentSection.fields.push({name: match[1], value: match[2]});
+        } else {
+            throw new Error('Line "' + line + '" is invalid.');
+        }
+    });
+
+    return categories;
+}
+```
+- above code often uses ^ and $ to ensure expression matches whole line
+    - good practice
+- pattern
+```
+if (match = string.match(...))
+```
+- uses successful assignment as boolean to test if desired match exists
+
+###International Characters
+- Javascript's regexp system is ignorant of non-English characters
+    - word chars are the 26 latin letters, upper and lower, and the underscore
+    - accented vowels or greek letters are not accepted as word chars
+- potentially support for other languages down the road
+
+END OF CHAPTER

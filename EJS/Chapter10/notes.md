@@ -60,3 +60,34 @@ console.log(dayName(3)); //> Wednesday
 - this module is wrapped in a function
 
 ###Objects as Interfaces
+- if we wanted to add another function to our module that went from a day name to a number we can't return a single function anymore
+    - must wrap two functions in an object
+```javascript
+var weekDay = function() {
+    var names = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+    return {
+        name: function(number) { return names[number]; },
+        number: function(name) { return names.indexOf(name); }
+    };
+}();
+console.log(weekDay.name(weekDay.number("Sunday"))); //> Sunday
+```
+- for bigger modules gathering all of the output functions into an object can be awkward due to their size
+    - declare an object (conventionally named exports) and add properties to it whenever defining something that needs to be exported
+```javascript
+(function(exports) {
+    var names = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+
+    exports.name = function(number) {
+        return names[number];
+    };
+    exports.number = function(name) {
+        return names.indexOf(name);
+    };
+})(this.weekDay = {});
+console.log(weekDay.name(weekDay.number("Saturday"))); //> Saturday
+```
+- the module takes an interface object as an argument
+    - outside the function ```this``` refers to the global scope object
+
+###Detaching from the Global Scope

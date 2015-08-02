@@ -91,3 +91,64 @@ console.log(weekDay.name(weekDay.number("Saturday"))); //> Saturday
     - outside the function ```this``` refers to the global scope object
 
 ###Detaching from the Global Scope
+- above pattern is common use for modules intended for the browser
+    - claims a single global variable and wraps code in a function to create its own private namespaces
+        - still an issue if another module tries to claim the same name
+        - or if you want to load two versions of the same module along side each other
+- we will create a system that allows one module to request the interface of an object of another module without going through the global scope
+    - require function
+        - loads a module's file and returns the appropriate interface value
+            - solves above issues
+            - makes dependencies explicit
+        - needs
+            - a function ```readFile``` which returns the content of a given file as a string
+                - does not exist in standard JS but there are ways (browser, node.js)
+            - the ability to execute the string as javascript code
+
+###Evaluating Data as Code
+- could use eval() to execute code but eval is awfully awful
+```javascript
+function evalAndReturnX(code) {
+    eval(code);
+    return x;
+}
+console.log(evalAndReturnX('var x = 2')); //> 2
+```
+- better to use the Function constructor
+```javascript
+var plusOne = new Function('n', 'return n + 1;');
+console.log(plusOne(4)); //> 5
+```
+- with this we can wrap the module's code in a function creating our module scope
+
+###The require Function
+- basic implementation of ```require```:
+```javascript
+function require(name) {
+    var code = new Function('exports', readFile(name));
+    var exports = {};
+    code(exports);
+    return exports;
+}
+console.log(require('weekDay').name(1)); //> Monday
+```
+- since the module's code will be wrapped in a function we don't have to write a wrapping namespace function in the module file itself
+    - also, since 'exports' is an argument to all new Functions the module does not have to declare it
+        - this leaves us with the following for the 'weekDay' module
+```javascript
+var names = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+
+exports.name = function(number) {
+    return names[number];
+};
+exports.number = function(name) {
+    return names.indexOf(name);
+};
+```
+- in use, this pattern typically starts with a few variable declaration calls to require
+```javascript
+var weekDay = require('weekDay');
+var today = require('today');
+
+console.log(weekDay.name(today.dayNumber()));
+```

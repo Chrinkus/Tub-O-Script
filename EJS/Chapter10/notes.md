@@ -152,3 +152,10 @@ var today = require('today');
 
 console.log(weekDay.name(today.dayNumber()));
 ```
+- the basic implemenation of the require function given above has problems
+    - it loads and runs a module everytime it is required
+        - if several modules have the same dependency they will call it multiple times
+            - solution: store modules that have already been loaded in an object and use it
+    - it also only allows the modules it loads to export anything other than the exports object
+        - this is solved by providing modules with another variable, ```module```
+            - module is an object that has a property exports

@@ -262,3 +262,36 @@ function define(depNames, moduleFunction) {
     whenDepsLoaded();
 }
 ```
+- the execution of the above code does not follow a predictable path
+    - multiple operations are set up to happen at some unspecified time in the future which makes it hard to trace how the code executes
+- an example of AMD is the RequireJS project
+
+###Interface Design
+- most useful coding can be modeled in various ways
+- get out there and use different interfaces to learn what makes a good and bad interface
+
+####Predictability
+- if a programmer can predict the way an interface will work they will have a better time using it
+    - stick to conventions
+        - if theres an existing module similar to yours, make yours resemble it
+    - the way it behaves is important
+        - attempting to be clever can end up making your interface harder to grasp by the user
+
+####Composability
+- try to use the simplest data structures possible and make functions do a single, clear thing
+    - try to make pure functions
+- modules can be made to provide their own array-like collection objects with their own interfaces for counting and extracting elements
+    - such constructed objects won't have access to the many native array functions
+        - also, any function expecting a normal array won't work with them
+            - cannot be easily composed with other code
+
+####Layered Interfaces
+- when designing an interface for a complex piece of functionality (email)
+    - you don't want to overload the user with details
+    - you don't want to hide the depth of functionality either
+        - provide two interfaces
+            - low level for complex situations
+            - high level for everyday user
+                - build the high out of the low
+
+END OF CHAPTER

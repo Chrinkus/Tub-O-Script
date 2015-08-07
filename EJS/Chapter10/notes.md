@@ -159,3 +159,106 @@ console.log(weekDay.name(today.dayNumber()));
     - it also only allows the modules it loads to export anything other than the exports object
         - this is solved by providing modules with another variable, ```module```
             - module is an object that has a property exports
+                - initially points at empty object created by require but can be overwritten
+```javascript
+function require(name) {
+    if (name in require.cache) {
+        return require.cache[name];
+    }
+    var code = new Function('exports, module', readFile(name));
+    var exports = {}, module = {exports: exports};
+    code(exports, module);
+
+    require.cache[name] = module.exports;
+    return module.exports;
+}
+require.cache = Object.create(null);
+```
+- we have a module system that uses a single global variable (require) to allow modules to find and use each other without affecting the global scope
+- the above system was called *CommonJS modules* but has since been integrated into Node.js
+
+###Slow-Loading Modules
+- commonJS module style is not suited to asynchronous environments
+    - commonJS lines up require calls and executes them before moving on
+        - ok if all files are in one place but not if they're retrieved via the web
+- there are work arounds like Browserify that resolve dependencies into a large file before loading
+- another way is to wrap module code in a function so loader can load dependencies in the background then call function to initialize the module after they've been loaded
+    - this is Asynchronous Module Definition (AMD)
+```javascript
+define(["weekDay", "today"], function(weekDay, today) {
+    console.log(weekDay.name(today.dayNumber()));
+});
+```
+- the ```define``` function
+    - takes an array of module names and a function
+        - function takes one argument for each dependency
+    - define will load dependencies in the background allowing page to continue working
+        - once all dependencies are loaded define will call the function with the interfaces of the dependencies as arguments
+    - the modules must themselves have a call to define
+        - the value to be exported as their interface is whatever the function passed to define returns
+```javascript
+// weekDay module
+define([], function() {
+    var names = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+
+    return {
+        name: function(number) { return names[number]; },
+        number: function(name) { return names.indexOf(name); }
+    };
+});
+```
+- to demonstrate the ```define``` function we will assume we have a backgroundReadFile function
+    - takes a filename and a function and calls the function with the content of the file as soon as it finishes loading it
+    - define uses objects to describe the state of modules
+        - available? provides interface when they are
+        - getModule function takes a module name and returns the state object of that module and ensures it is scheduled to be loaded
+        - uses a cache object to avoid loading same module twice
+```javascript
+var defineCache = Object.create(null);
+var currentMod = null;
+
+function getModule(name) {
+    if (name in defineCache) {
+        return defineCache[name];
+    }
+    var module = {
+        exports: null,
+        loaded: false,
+        onLoad: []
+    };
+    defineCache[name] = module;
+    backgroundReadFile(name, function(code) {
+        currentMod = module;
+        new Function('', code)();
+    });
+    return module;
+}
+```
+- assume loaded file also contains a call to define
+- currentMod variable tells this call about the module object that is currently being loaded
+    - will update this object when it is finished loading
+```javascript
+function define(depNames, moduleFunction) {
+    var myMod = currentMod;
+    var deps = depNames.map(getModule);
+    deps.forEach(function(mod) {
+        if (!mod.loaded) {
+            mod.onLoad.push(whenDepsLoaded);
+        }
+    });
+
+    function whenDepsLoaded() {
+        if (!deps.every(function(m) { return m.loaded; })) {
+            return;
+        }
+        var args = deps.map(function(m) { return m.exports; });
+        var exports = moduleFunction.apply(null, args);
+        if (myMod) {
+            myMod.exports = exports;
+            myMod.loaded = true;
+            myMod.onLoad.every(function(f) { f(); });
+        }
+    }
+    whenDepsLoaded();
+}
+```

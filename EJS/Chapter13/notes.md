@@ -68,3 +68,25 @@ console.log(talksAbout(document.body, 'book')); //> true
     - example body tag has 3 tagged children
         - <h1> & 2 <p>'s
     - AND 4 text nodes consisting of the spaces between those nodes
+- hardcoding element locations is unwise as the structure of the document may change and often does
+    - BAD - get the 2nd child of the 6th child of the document
+    - GOOD - get the first link
+        - using Node.getElementsByTagName()
+```javascript
+var link = document.body.getElementsByTagName('a')[0];
+console.log(link.href);
+```
+- to find a specific node, we can give it an ```id``` attribute and use Node.getElementById() instead
+```html
+<p>My ostrich Gertrude:</p>
+<p><img id="gertrude" src="img/ostrich.png"></p>
+
+<script>
+    var ostrich = document.getElementById('gertrude');
+    console.log(ostrich.src);
+</script>
+```
+- can also use the getElementsByClassName() method
+    - classes are assigned like id's but are for grouping together otherwise unlike nodes
+
+###Changing the Document

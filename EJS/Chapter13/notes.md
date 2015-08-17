@@ -4,7 +4,7 @@
 
 ###Document Structure
 - an HTML document is a nested set of boxes
-    - the <title> box is found within the <head> box
+    - the ```<title>``` box is found within the ```<head>``` box
 - for each box there is an object which will tell us what tag it represents and what it contains
     - this is the document object model (DOM)
 - the global variable ```document``` provides access to these objects
@@ -66,7 +66,7 @@ console.log(talksAbout(document.body, 'book')); //> true
 ###Finding Elements
 - text nodes are created for the whitespace between elements
     - example body tag has 3 tagged children
-        - <h1> & 2 <p>'s
+        - ```<h1>``` & 2 ```<p>```'s
     - AND 4 text nodes consisting of the spaces between those nodes
 - hardcoding element locations is unwise as the structure of the document may change and often does
     - BAD - get the 2nd child of the 6th child of the document
@@ -90,3 +90,57 @@ console.log(link.href);
     - classes are assigned like id's but are for grouping together otherwise unlike nodes
 
 ###Changing the Document
+- almost everything in the DOM structure can be changed
+    - Node.removeChild() - removes given child node from the document
+    - Node.appendChild() - adds a child at the end of the list of children
+    - Node.insertBefore() - inserts node given as the first argument before node given as second argument
+```html
+<p>One</p>
+<p>Two</p>
+<p>Three</p>
+
+<script>
+    var paragraphs = document.body.getElementsByTagName("p");
+    document.body.insertBefore(paragraphs[2], paragraphs[0]);
+</script>
+```
+- any node can exist in one place in a given document
+    - the above code inserts "Three" before "One" after removing it from the end of the document
+    - end result is "Three/One/Two"
+- Node.replaceChild() - replaces the node given as second argument with first argument
+    - replaced node must be a child of the element the method was called on
+    - replaceChild() and insertBefore() both take new node as first arg
+
+###Creating Nodes
+- we want to replace all images in a document with the text held in their alt attributes
+    - we remove the image and create a text node using document.createTextNode()
+```html
+<p>The <img src="img/cat.png" alt="Cat"> in the <img src="img/hat.png" alt="Hat">.</p>
+
+<p><button onclick="replaceImages()">Replace</button></p>
+
+<script>
+    function replaceImages() {
+        var images = document.body.getElementsByTagName("img");
+        for (var i = images.length - 1; i >= 0; i--) {
+            var image = images[i];
+            if (image.alt) {
+                var text = document.createTextNode(image.alt);
+                image.parentNode.replaceChild(text, image);
+            }
+        }
+    }
+</script>
+```
+- the for loop starts at the end of the list of nodes because the node list returned by getElementsByTagName() is *live*
+    - it is updated as the document changes
+    - since we are replacing img elements the list will shrink as we loop
+        - starting from the beginning will cause the iterator to skip nodes as we remove the first node every pass
+- to create a *solid* collection of nodes as opposed to live we can convert the images variable to a real array by calling array.slice() on it
+```javascript
+var arrayish = {0: "one", 1: "two", length: 2};
+var real = Array.prototype.slice.call(arrayish, 0);
+real.forEach(function(elt) { console.log(elt); });
+//> one
+//> two
+```

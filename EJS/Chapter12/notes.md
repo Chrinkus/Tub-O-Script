@@ -63,27 +63,27 @@ protocol       server              path
 - tags are wrapped in angle brackets (< and >)
     - give the page structure
     - most tags have an opening and closing tag
-- <!doctype html>
+- ```<!doctype html>```
     - tells browser to interpret it as modern html
-- <head></head>
+- ```<head></head>```
     - contains information about the document
-- <body></body>
+- ```<body></body>```
     - contains the actual document
-    - <h1></h1>
+    - ```<h1></h1>```
         - the heading tags scale from h1 - h6
-    - <p></p>
+    - ```<p></p>```
         - used for paragraphs
 - some opening tags contain extra information in the form of name="value" pairs or attributes
-    - <a href="http//..."></a>
+    - ```<a href="http//..."></a>```
         - href - hypertext reference
 - if a tag is not meant to enclose any content it does not usually require a closing tag
-    - <img src="http//...jpg">
+    - ```<img src="http//...jpg">```
         - displays an image found at a given source
 - in order to include angle brackets as text in html we must use special notation similar to escaping characters in Javascript
-    - < = &lt; (less than)
-    - > = &gt; (greater than)
-    - " = &quot; (quotes)
-    - & = &amp; (ampersand)
+    - < = ```&lt;``` (less than)
+    - > = ```&gt;``` (greater than)
+    - " = ```&quot;``` (quotes)
+    - & = ```&amp;``` (ampersand)
     - an ampersand followed by a word and a semicolon is called an entity
 - HTML is parsed in a very error tolerant way
     - when tags are missing the browser fills them in as best as it can
@@ -98,12 +98,12 @@ protocol       server              path
 <p>I also wrote a book! Read it <a href=http://eloquentjavascript.net>here</a>
 ```
 - the html, head, and body tags are gone completely
-    - browser recognizes <title> as a head element and <h1> as a body element
+    - browser recognizes ```<title>``` as a head element and ```<h1>``` as a body element
     - paragraphs aren't closed and quotes around URL are gone
     - while the browser can cover for these errors it is best to do it right (duh-doi)
 
 ###HTML and JavaScript
-- most important tag to us is <script> tag
+- most important tag to us is ```<script>``` tag
     - allows us to include javascript in the document
 ```html
 <h1>Testing alert</h1>
@@ -111,13 +111,13 @@ protocol       server              path
 ```
 - this script will run as soon as the tag is encountered
 - writing large sections of code in an html document is impractical
-    - <script> can be given a src attribute to fetch a script file from a URL
+    - ```<script>``` can be given a src attribute to fetch a script file from a URL
 ```html
 <h1>Testing alert</h1>
 <script src="code/hello.js"></script>
 ```
 - when an HTML page references URLs as part of itself it will retrieve them immediately and use them on the page
-- <script> must always be enclosed by a </script> even if it references another file
+- ```<script>``` must always be enclosed by a ```</script>``` even if it references another file
 - some attributes can also contain javascript code:
 ```html
 <button onclick="alert('Boom');">DO NOT PRESS</button>

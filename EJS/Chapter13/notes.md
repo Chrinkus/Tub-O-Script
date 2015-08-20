@@ -113,7 +113,7 @@ console.log(link.href);
 
 ###Creating Nodes
 - we want to replace all images in a document with the text held in their alt attributes
-    - we remove the image and create a text node using document.createTextNode()
+    - we remove the image and create a text node (type 3) using document.createTextNode()
 ```html
 <p>The <img src="img/cat.png" alt="Cat"> in the <img src="img/hat.png" alt="Hat">.</p>
 
@@ -144,3 +144,53 @@ real.forEach(function(elt) { console.log(elt); });
 //> one
 //> two
 ```
+- if we want to create a regular element node (type 1) we can use the document.createElement() method
+    - takes a tag name and returns a new empty node of the given type
+```html
+<blockquote id="quote">
+    No book can ever be finished. While working on it we learn just enough to find it immature the moment we turn away from it.
+</blockquote>
+
+<script>
+    function elt(type) {
+        var node = document.createElement(type);
+        for (var i = 1; i < arguments.length; i++) {
+            var child = arguments[i];
+            if (typeof child == "string") {
+                child = document.createTextNode(child);
+            }
+            node.appendChild(child);
+        }
+        return node;
+    }
+
+    document.getElementById("quote").appendChild(
+        elt("footer", "--", elt("strong", "Karl Popper"),
+        ", preface to the second edition of ",
+        elt("em", "The Open Society and Its Enemies"),
+        ", 1950"));
+
+</script>
+```
+- we define a utility ```elt``` which creates an element node and treats the rest of the arguments as children to that node
+
+###Attributes
+- a limited set of commonly used attributes exist as properties of an element's DOM object
+    - html also allows us to create our own attributes and assign them values
+        - created attributes will not be present as properties of the element but instead accessible using the getAttribute and setAttribute methods
+```html
+<p data-classified="secret">The launch code is 000000000.</p>
+<p data-classified="unclassified">I have two feet.</p>
+
+<script>
+    var paras = document.body.getElementsByTagName("p");
+    Array.prototype.forEach.call(paras, function(para) {
+        if (para.getAttribute("data-classified") == "secret") {
+            para.parentNode.removeChild(para);
+        }
+    });
+</script>
+```
+- recommend to prefix made-up attributes with data- to ensure they will not conflict with other attributes
+- example - syntax highlighter
+    - looks for ```<pre>``` tags (preformatted, used for code and plaintext) with a data- attribute and trues to highlight keywords for that language

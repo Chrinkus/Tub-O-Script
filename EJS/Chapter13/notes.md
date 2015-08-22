@@ -194,3 +194,13 @@ real.forEach(function(elt) { console.log(elt); });
 - recommend to prefix made-up attributes with data- to ensure they will not conflict with other attributes
 - example - syntax highlighter
     - looks for ```<pre>``` tags (preformatted, used for code and plaintext) with a data- attribute and trues to highlight keywords for that language
+
+###Layout
+- Block elements
+    - ```<p>``` and ```<h1>``` take up the entire width of the document
+- Inline elements
+    - ```<a>``` and ```<strong>``` are rendered on the same line as their surrounding text
+- browsers compute the document's layout based on styling and element types then actually draw the document
+    - the size and position of an element can be accessed using javascript
+        - Node.offsetWidth & Node.offsetHeight properties give the space an element takes up in pixels
+        - Node.clientWidth & Node.clientHeight properties give the space inside the element (not including the border)

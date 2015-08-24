@@ -10,6 +10,7 @@
 <canvas id="tutorial" width="150" height="150"></canvas>
 ```
 - when no styling rules are applied to the canvas it will be initially fully transparent
+
 ####Fallback Content
 - for older browsers we can provide alternative content to be displayed if they can't process a canvas
     - place fallback content between the tags
@@ -23,6 +24,7 @@
     - to display something, script needs to access the rendering context and draw on it
     - the canvas element has a getContext() method that obtains the context and its drawing functions
         - takes the type of context as a parameter
+
 ####Checking for Support
 - fallback content can be provided for with scripts as well using an if construct
 
@@ -77,3 +79,32 @@
 - the moveTo() function acts as lifting the pen off the page
     - moveTo(x, y)
         - Moves the pen to the coordinates specified by x and y
+
+####Lines
+- to draw a straight line we use
+    - lineTo(x, y)
+        - Draws a line from the current drawing position to the position specified by x and y
+        - the x and y are the end points of the line, start point is dependent on previous path end point
+
+####Arcs
+- to draw arcs we use the acr() or arcTo() methods
+    - arc(x, y, radius, startAngle, endAngle, anticlockwise)
+        - x, y is center
+        - startAngle is point @ radius away from center to start
+        - endAngle is point along arc to stop drawing
+        - anticlockwise boolean setting
+            - false defaults to clockwise
+    - arcTo(x1, y1, x2, y2, radius)
+        - Draws an arc with the given control points and radius, connected to the previous point by a straight line
+- radians are used to measure angles
+    - 1 radian is an arc length equal to the radius of the circle
+        - a half circle is equal to PI rads
+        - a full circle is equal to 2*PI rads
+- the origin of a circle is at the 3 o'clock position
+
+####Bezier and Quadratic Curves
+- bezier curves are available in cubic and quadratic types (**correct?**)
+    - quadraticCurveTo(cp1x, cp1y, x, y)
+        - draws a quadratic curve from current pen position to (x, y) endoint using control point (cp1x, cp1y)
+    - bezierCurveTo(cp1x, cp1y, cp2x, cp2y, x, y)
+        - draws a cubic bezier curve from current pos to (x, y) using 2 control points

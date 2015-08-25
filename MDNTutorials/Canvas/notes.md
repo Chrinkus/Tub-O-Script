@@ -108,3 +108,45 @@
         - draws a quadratic curve from current pen position to (x, y) endoint using control point (cp1x, cp1y)
     - bezierCurveTo(cp1x, cp1y, cp2x, cp2y, x, y)
         - draws a cubic bezier curve from current pos to (x, y) using 2 control points
+
+####Rectangles
+- the initial 3 methods for rectangles drew shapes directly to the canvas
+    - to add a rectangular path to an open path we use the rect() method
+    - rect(x, y, width, height)
+        - same parameters
+        - when executed, the moveTo() method is automatically called to (0, 0)
+            - pen is reset to origin
+
+####Making Combinations
+- fillStyle
+    - default full color is black
+    - can cange fill color with fillStyle = "string"
+- utility functions
+    - repetitive shapes can be made easier by creating a shape type and using that instead
+
+###Path2D Objects
+- to simplify code and improve performance Path2D constructors were created
+    - lets you cache drawing commands for quicker playback
+- The Path2D() constructor returns a newly instantiated Path2D object, optionally with another path as an argument (creates a copy) or optionally with a string consisting of SVG path data.
+```javascript
+new Path2D();       // empty path object
+new Path2D(path);   // copy from another Path2D object
+new Path2d(d);      // path from SVG path data
+```
+- all previously defined path methods are available on Path2D objects
+- also allows you to combine paths using addPath method
+    - Path2D.addPath(path [,transform])
+        - Adds a path to the current path with an optional transformation matrix
+
+####Using SVG Paths
+- Path2D() objects will accept SVG path data
+    - may allow data to be used in svg and canvas interchangeably
+```javascript
+var p = new Path2D("M10 10 h 80 v 80 h -80 Z");
+```
+- the above
+    - moves to 10, 10 (M10, 10)
+    - moves 80 points to the right (h 80)
+    - moves 80 points down (v 80)
+    - moves 80 points to the left (h -80)
+    - returns to start (Z)

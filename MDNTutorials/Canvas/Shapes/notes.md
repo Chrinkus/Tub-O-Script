@@ -1,4 +1,4 @@
-#Canvas Tutorial
+#Canvas Tutorial - Basic Shapes
 
 - First introduced in WebKit by Apple for the OS X Dashboard
 - Today all major browsers support it

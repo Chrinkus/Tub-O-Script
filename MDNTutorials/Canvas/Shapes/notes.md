@@ -1,4 +1,4 @@
-#Canvas Tutorial
+#Canvas Tutorial - Basic Shapes
 
 - First introduced in WebKit by Apple for the OS X Dashboard
 - Today all major browsers support it
@@ -145,8 +145,10 @@ new Path2d(d);      // path from SVG path data
 var p = new Path2D("M10 10 h 80 v 80 h -80 Z");
 ```
 - the above
-    - moves to 10, 10 (M10, 10)
-    - moves 80 points to the right (h 80)
-    - moves 80 points down (v 80)
-    - moves 80 points to the left (h -80)
-    - returns to start (Z)
+    1. moves to 10, 10 (M10, 10)
+    2. moves 80 points to the right (h 80)
+    3. moves 80 points down (v 80)
+    4. moves 80 points to the left (h -80)
+    5. returns to start (Z)
+
+END OF SECTION

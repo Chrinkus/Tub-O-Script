@@ -8,14 +8,14 @@ function draw() {
     radgrad.addColorStop(1, "rgba(1, 159, 98, 0)");
 
     var radgrad2 = ctx.createRadialGradient(105, 105, 20, 112, 120, 50);
-    radgrad.addColorStop(0, "#ff5f98");
-    radgrad.addColorStop(0.75, "#ff0188");
-    radgrad.addColorStop(1, "rgba(255, 1, 136, 0)");
+    radgrad2.addColorStop(0, "#ff5f98");
+    radgrad2.addColorStop(0.75, "#ff0188");
+    radgrad2.addColorStop(1, "rgba(255, 1, 136, 0)");
 
     var radgrad3 = ctx.createRadialGradient(95, 15, 15, 102, 20, 40);
-    radgrad.addColorStop(0, "#00c9ff");
-    radgrad.addColorStop(0.8, "#00b5e2");
-    radgrad.addColorStop(1, "rgba(0, 201, 255, 0)");
+    radgrad3.addColorStop(0, "#00c9ff");
+    radgrad3.addColorStop(0.8, "#00b5e2");
+    radgrad3.addColorStop(1, "rgba(0, 201, 255, 0)");
 
     var radgrad4 = ctx.createRadialGradient(0, 150, 50, 0, 140, 90);
     radgrad4.addColorStop(0, "#f4f201");

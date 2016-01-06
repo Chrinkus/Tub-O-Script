@@ -98,3 +98,23 @@ function getMyVideo() {
         - the last four parameters identify the destination and scaled size of the spliced image on the canvas
             - the location is defined by (dx, dy)
             - the new size is dWidth * dHeight
+- the examples slicing.js/indexFrame.html load the images directly in the HTML and retrieves them from the page before slicing and displaying them
+    - the inline CSS "display:none;" ensures the initial loading of the images are not visible
+
+###Art Gallery
+- the example set gallery.js, gallery.css, indexGallery.html display a table of images as individual canvases with frames applied to them
+    - the stylesheet ensures none of the images display independently of their canvas representations
+    - the loop creates a canvas element for each image, draws the image then adds a frame
+    - in gallery.js the insertBefore() method places our newly created canvas into the DOM
+        - the location (before the image represented by the canvas) seems to be the best option of anywhere else on the page
+
+###Controlling Image Scaling Behaviour
+- scaling images can result in unwanted effects (fuzzy, blocky)
+    - we can turn off default image smoothing by accessing the imageSmoothingEnabled property which is set to true by default
+        - can be turned off like this:
+```javascript
+ctx.mozImageSmoothingEnabled = false;
+ctx.webkitImageSmoothingEnabled = false;
+ctx.msImageSmoothingEnabled = false;
+ctx.imageSmoothingEnabled = false;
+```

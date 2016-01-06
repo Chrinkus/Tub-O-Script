@@ -1,5 +1,5 @@
 function draw() {
-    var ctx = document.getElemenById("tutorial").getContext("2d");
+    var ctx = document.getElementById("tutorial").getContext("2d");
 
     // Draw slice
     ctx.drawImage(document.getElementById("source"), 33, 71, 104, 124, 21, 20, 87, 104);

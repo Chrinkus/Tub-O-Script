@@ -68,3 +68,32 @@
 - a scaling factor of 0.5 reduces canvas elements to half size, 2.0 doubles the size
 
 ####A scale example
+- the example scaling.js draws a few shapes with different scaling factors
+    - a small 10*10 box is drawn then altered using scale(10, 3) creating a large rectangle
+    - a snippet of text is then displayed as if it were mirrored using scale(-1, 1)
+
+###Transforms
+- in the final method we can modify the transformation matrix directly
+    - transform(a, b, c, d, e, f)
+        - Multiplies the current transformation matrix with the matrix described by its arguments
+        - the transformation matrix is described by a 3*3 array with rows as follows:
+            [a, c, e]
+            [b, d, f]
+            [0, 0, 1]
+        - the parameters are:
+            - a - horizontal scaling (m11)
+            - b - horizontal skewing (m12)
+            - c - vertical skewing (m21)
+            - d - vertical scaling (m22)
+            - e - Horizontal moving (dx)
+            - f - Vertical moving (dy)
+    - setTransform(a, b, c, d, e, f)
+        - resets the current transform to the identity maatrix and invokes transform() with the same arguments
+            - undoes current transformation then sets new transformation in one step
+    - resetTransform()
+        - resets the current transform to the identity matrix
+        - same as calling ctx.transform(1, 0, 0, 1, 0, 0);
+
+####A transform example
+- the example transforms.js is interesting
+    - I need to gain a better understanding of matrix multiplication and using sines and cosines to create circular patterns

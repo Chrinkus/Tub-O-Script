@@ -34,3 +34,22 @@
     - by setting EventListeners we catch any user interaction and execute our animating functions
 
 ###An animated solar system
+- the example solar.js produces an animated picture of the earth orbiting the sun with a moon orbiting the earth
+    - this example makes use of many of the previous methods and techniques while introducing a few new ones
+        - 3 images are imported from mozillademos
+            - a 300px*300px starfield with a sun in the middle
+            - a 12px radius earth
+            - a 3.5px radius moon
+        - the globalCompositeOperation is set to "destination-over" allowing us to paint new objects underneath existing content
+            - render order is the earth, moon, earth orbit path, and sun
+        - initial context is saved then origin is translated to canvas centre and canvas grid is rotated by referencing time
+            - as canvas is rotated, earth is rendered 105px "out" from centre along the x-axis
+                - a transparent "shadow" is rendered outside the orbit
+                - the earth is then rendered
+            - canvas is saved again before rotating context (currently with origin centred on earth) referencing time again
+                - origin is then translated to a location along the moons orbit to render moon
+                - 2 context restores bring our origin back to original position to draw earth orbit and finally lay down the sun backdrop
+    - an initialize function is defined to retrieve the images and call the first requestAnimationFrame on draw()
+        - as per design, the last line of draw() calls the next requestAnimationFrame and the code loops producing animation
+
+###An animated clock

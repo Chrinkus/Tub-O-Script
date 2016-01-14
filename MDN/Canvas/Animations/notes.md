@@ -53,3 +53,20 @@
         - as per design, the last line of draw() calls the next requestAnimationFrame and the code loops producing animation
 
 ###An animated clock
+- the example clock.js produces an animated clock face depicting the current local time
+    - though minimal in design, this example contains a fair amount of code as it draws all of its own elements as opposed to importing images like the last example
+    - there is also quite a bit of rotate() using Math.PI references against the variable ```now``` which is interesting due to the relationship of time to circles
+        - initially, the default context is saved and canvas cleared
+            - then primary settings are input
+                - origin is translated to centre
+                - scale is set to 40%
+                - the context is rotated -90 degrees to the twelve o'clock position
+                - the rest is self explanatory
+        - next the hour marks are drawn starting at 12 and rotating around the face in ```Math.PI/6``` radian increments
+        - the minutes are then drawn skipping every 5th where an hour mark would be
+        - a value for seconds, minutes and hours is extracted from the Date object and hour is converted from 24 hour time to 12
+        - much of the remainder of the program is calculating a current position for each hand, rotating to there, then manually drawing the hand on the face
+            - again, radian math is used to carve up the circle into various increments
+- it might be fun to see if I can write a program to animate a binary clock face...
+
+###A looping panorama

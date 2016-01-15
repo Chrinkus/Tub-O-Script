@@ -70,3 +70,10 @@
 - it might be fun to see if I can write a program to animate a binary clock face...
 
 ###A looping panorama
+- the example panorama.js does not seem like a very useful exercise but I completed it more for the "style" of the code
+    - whoever wrote it uses different whitespace and construct conventions than I've otherwise seen in this series of tutorials
+    - though it IS an example of using setInterval() to animate as opposed to requestAnimationFrame()
+        - this leaves setTimeout() as the only unrepresented animation function
+
+###Other examples
+- the basic ray-caster is exceptionally interesting and something I will look into after completing the next and probably last tutorial in this set

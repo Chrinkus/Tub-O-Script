@@ -1,7 +1,4 @@
-p {
-    color: blue;
-    text-decoration: underline;
-}
-strong {
-    color: red;
-}
+strong { color: red; }
+.carrot { color: orange; }
+.spinach { color: green; }
+#first { font-style: italic; }

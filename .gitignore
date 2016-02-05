@@ -1,0 +1,5 @@
+# Temp editor files
+*.swp
+
+# Other
+.DS_Store

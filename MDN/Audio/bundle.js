@@ -34,22 +34,33 @@ module.exports = Kick;
 },{}],2:[function(require,module,exports){
 let Kick        = require("./kick");
 let Snare       = require("./snare");
+let Tone        = require("./tone");
 
 let audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 let now = audioCtx.currentTime;
 
 let twoBars = {
 
+    tone:  [1, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0],
     kick:  [1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0],
     snare: [0, 0, 1, 1, 0, 0, 1, 0, 0, 0, 1, 1, 0, 0, 1, 0]
 };
 
 let kick = new Kick(audioCtx);
 let snare = new Snare(audioCtx);
+let tone = new Tone(audioCtx);
 
 let tempo = 120;
 let beat = 60 / tempo;
 let eighths = beat / 2;
+
+let toneSched = [];
+
+twoBars.tone.forEach((ele, i) => {
+    if (ele) {
+        toneSched.push(i * eighths);
+    }
+});
 
 let kickSched = [];
 
@@ -75,7 +86,11 @@ snareSched.forEach(ele => {
     snare.trigger(now + ele);
 });
 
-},{"./kick":1,"./snare":3}],3:[function(require,module,exports){
+toneSched.forEach(ele => {
+    tone.play(now + ele, 130.81, eighths)
+});
+
+},{"./kick":1,"./snare":3,"./tone":4}],3:[function(require,module,exports){
 // Snare Drum Synthesis
 //
 // Special thanks to Chris Lowis for the article:
@@ -144,5 +159,45 @@ Snare.prototype.trigger = function(time) {
 };
 
 module.exports = Snare;
+
+},{}],4:[function(require,module,exports){
+function Tone(ctx, type) {
+    "use strict";
+    this.ctx = ctx;
+    this.type = type;
+}
+
+Tone.prototype.setup = function() {
+    this.osc = this.ctx.createOscillator();
+    this.gainEnv = this.ctx.createGain();
+
+    this.osc.type = this.type;
+
+    this.osc.connect(this.gainEnv);
+    this.gainEnv.connect(this.ctx.destination);
+};
+
+Tone.prototype.play = function(time, freq, dur) {
+    this.setup();
+
+    this.osc.frequency.setValueAtTime(freq, time);
+    this.gainEnv.gain.setValueAtTime(0.5, time);
+
+    this.osc.start(time);
+    this.osc.stop(time + dur);
+};
+
+module.exports = Tone;
+/*
+let audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+let now = audioCtx.currentTime;
+
+let tone = new Tone(audioCtx, "sawtooth");
+let dur = 0.5;
+tone.play(now, 110, dur);
+tone.play(now + 2 * dur, 164.81, dur * 2);
+tone.play(now + 4 * dur, 196, dur / 2);
+tone.play(now + 6 * dur, 220, dur);
+*/
 
 },{}]},{},[2]);

@@ -1,4 +1,44 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
+function Hihat(ctx) {
+    "use strict";
+    this.ctx = ctx;
+}
+
+Hihat.prototype.setup = function() {
+    this.osc = this.ctx.createOscillator();
+    this.osc.type = "square";
+
+    this.bandpass = this.ctx.createBiquadFilter();
+    this.bandpass.type = "bandpass";
+    this.bandpass.frequency.value = 10000;
+
+    this.highpass = this.ctx.createBiquadFilter();
+    this.highpass.type = "highpass";
+    this.highpass.frequency.value = 7000;
+    
+    this.gainEnv = this.ctx.createGain();
+    this.osc.connect(this.bandpass);
+    this.bandpass.connect(this.highpass);
+    this.highpass.connect(this.gainEnv);
+    this.gainEnv.connect(this.ctx.destination);
+};
+
+Hihat.prototype.trigger = function(triggerTime) {
+    let time = this.ctx.currentTime + triggerTime;
+    this.setup();
+
+    this.osc.frequency.setValueAtTime(330, time);
+
+    this.gainEnv.gain.setValueAtTime(1, time);
+    this.gainEnv.gain.exponentialRampToValueAtTime(0.01, time + 0.05);
+
+    this.osc.start(time);
+    this.osc.stop(time + 0.05);
+};
+
+module.exports = Hihat;
+
+},{}],2:[function(require,module,exports){
 // Kick Drum Synthesis
 //
 // Special thanks to Chris Lowis for the article:
@@ -32,10 +72,11 @@ Kick.prototype.trigger = function(triggerTime) {
 
 module.exports = Kick;
 
-},{}],2:[function(require,module,exports){
+},{}],3:[function(require,module,exports){
 var Tone        = require("./tone");
 var Kick        = require("./kick");
 var Snare       = require("./snare");
+var Hihat       = require("./hihat");
 var scale       = require("./scale");
 var timer       = require("./timer");
 
@@ -43,9 +84,10 @@ var timer       = require("./timer");
 //let ctx = canvas.getContext("2d");
 let audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
-let bas = new Tone(audioCtx, "square");
+let bas = new Tone(audioCtx, "sawtooth");
 let kick = new Kick(audioCtx);
 let snare = new Snare(audioCtx);
+let hihat = new Hihat(audioCtx);
 
 let basSched = [];
 let voices = null;
@@ -81,7 +123,10 @@ let rhythmSchedule = {
             1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0,],
 
     snare: [0, 0, 1, 1, 0, 0, 1, 0, 0, 0, 1, 1, 0, 0, 1, 0,
-            0, 0, 1, 1, 0, 0, 1, 0, 0, 0, 1, 1, 0, 0, 1, 0,]
+            0, 0, 1, 1, 0, 0, 1, 0, 0, 0, 1, 1, 0, 0, 1, 0,],
+
+    hihat: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+            1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,]
 };
 
 let rhythm = {
@@ -91,6 +136,10 @@ let rhythm = {
     },
     snare: {
         sound: snare,
+        time: []
+    },
+    hihat: {
+        sound: hihat,
         time: []
     }
 };
@@ -119,7 +168,7 @@ for (prop in rhythmSchedule) {
 
         timer.progress(tStamp);
 
-        if (counter < 20) {             // 50 is arbitrary, could be less
+        if (counter < 40) {             // 50 is arbitrary, could be less
             basSched.forEach(ele => {
                 bas.play(counter / 1000 + ele.time, ele.freq, eighths);
             });
@@ -141,7 +190,7 @@ for (prop in rhythmSchedule) {
     main();
 }());
 
-},{"./kick":1,"./scale":3,"./snare":4,"./timer":5,"./tone":6}],3:[function(require,module,exports){
+},{"./hihat":1,"./kick":2,"./scale":4,"./snare":5,"./timer":6,"./tone":7}],4:[function(require,module,exports){
 module.exports = (function() {
     "use strict";
 
@@ -170,7 +219,7 @@ module.exports = (function() {
     return scale;
 }());
 
-},{}],4:[function(require,module,exports){
+},{}],5:[function(require,module,exports){
 // Snare Drum Synthesis
 //
 // Special thanks to Chris Lowis for the article:
@@ -241,7 +290,7 @@ Snare.prototype.trigger = function(triggerTime) {
 
 module.exports = Snare;
 
-},{}],5:[function(require,module,exports){
+},{}],6:[function(require,module,exports){
 module.exports = {
     previous: 0,
     delta: 0,
@@ -259,7 +308,7 @@ module.exports = {
     }
 };
 
-},{}],6:[function(require,module,exports){
+},{}],7:[function(require,module,exports){
 function Tone(ctx, type) {
     "use strict";
     this.ctx = ctx;
@@ -300,4 +349,4 @@ tone.play(now + 4 * dur, 196, dur / 2);
 tone.play(now + 6 * dur, 220, dur);
 */
 
-},{}]},{},[2]);
+},{}]},{},[3]);

@@ -4,6 +4,7 @@ var Snare       = require("./snare");
 var Hihat       = require("./hihat");
 var scale       = require("./scale");
 var timer       = require("./timer");
+var Meter       = require("./meter");
 
 //let canvas = document.getElementById("viewport");
 //let ctx = canvas.getContext("2d");
@@ -16,8 +17,7 @@ let snare = new Snare(audioCtx);
 let hihat = new Hihat(audioCtx);
 
 let tempo = 120;
-let quarters = 60 / tempo;
-let eighths = quarters / 2;
+let meter = new Meter(tempo);
 
 let loopTime = 8000;
 
@@ -40,6 +40,7 @@ voiceSchedule = {
     ]
 };
 
+// kill proto
 let voices = {
     sop: {
         sound: sop,
@@ -58,22 +59,13 @@ for (prop in voiceSchedule) {
             let data = entry.split(",");
             // stuff
             voices[prop].sched.push({
-                freq: scale[entry],
-                time: i * eighths
+                freq: scale[data[0]],
+                dur: meter.getDur(data[1]),
+                time: i * meter.eighth
             });
         }
     });
 }
-
-// replace
-voices.bas.forEach((entry, i) => {
-    if (entry) {
-        basSched.push({
-            freq: scale[entry],
-            time: i * eighths
-        });
-    }
-});
 
 rhythmSchedule = {
     kick:  [1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0,
@@ -86,6 +78,7 @@ rhythmSchedule = {
             1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,]
 };
 
+// kill proto
 let rhythm = {
     kick: {
         sound: kick,
@@ -105,7 +98,7 @@ for (prop in rhythmSchedule) {
 
     rhythmSchedule[prop].forEach((entry, i) => {
         if (entry) {
-            rhythm[prop].sched.push(i * eighths);
+            rhythm[prop].sched.push(i * meter.eighth);
         }
     });
 }
@@ -123,16 +116,18 @@ for (prop in rhythmSchedule) {
         timer.progress(tStamp);
 
         if (counter < 40) {             // 50 is arbitrary, could be less
-            basSched.forEach(ele => {
-                bas.play(counter / 1000 + ele.time, ele.freq, eighths);
-            });
+
+            for (prop in voices) {
+                voices[prop].sched.forEach(ele => {
+                    voices[prop].sound.play(counter / 1000 + ele.time,
+                            ele.freq, ele.dur);
+                });
+            }
 
             for (prop in rhythm) {
-                if (rhythm.hasOwnProperty(prop)) {
-                    rhythm[prop].sched.forEach(ele => {
-                        rhythm[prop].sound.trigger(counter / 1000 + ele);
-                    });
-                }
+                rhythm[prop].sched.forEach(ele => {
+                    rhythm[prop].sound.trigger(counter / 1000 + ele);
+                });
             }
 
             counter = counter + loopTime;

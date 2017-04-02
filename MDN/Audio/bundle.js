@@ -79,46 +79,70 @@ var Snare       = require("./snare");
 var Hihat       = require("./hihat");
 var scale       = require("./scale");
 var timer       = require("./timer");
+var Meter       = require("./meter");
 
 //let canvas = document.getElementById("viewport");
 //let ctx = canvas.getContext("2d");
 let audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
+let sop = new Tone(audioCtx, "sine");
 let bas = new Tone(audioCtx, "sawtooth");
 let kick = new Kick(audioCtx);
 let snare = new Snare(audioCtx);
 let hihat = new Hihat(audioCtx);
 
-let basSched = [];
-let voices = null;
-
 let tempo = 120;
-let quarters = 60 / tempo;
-let eighths = quarters / 2;
+let meter = new Meter(tempo);
 
-let loopTime;
+let loopTime = 8000;
 
-voices = {
+let voiceSchedule = Object.create(null);
+let rhythmSchedule = Object.create(null);
+let prop;
+
+voiceSchedule = {
+    sop: [
+        "A4,hq", "", "", "", "", "", "F#/Gb4,q", "",
+        "C5,qe", "", "", "B4,q", "", "A4,q", "", "G4,e",
+        "A4,he", "", "", "", "", "E4,e", "G4,e", "D4,he",
+        "", "", "", "", "D4,e", "E4,e", "G4,e", "F#/Gb4,e"
+    ],
     bas: [
-        "D2", "", "", "D2", "", "", "", "",
-        "D2", "", "", "D2", "", "", "", "",
-        "C2", "", "", "C2", "", "", "", "",
-        "G2", "", "", "G2", "", "", "", ""
+        "D2,e", "", "", "D2,e", "", "", "", "",
+        "D2,e", "", "", "D2,e", "", "", "", "",
+        "C2,e", "", "", "C2,e", "", "", "", "",
+        "G2,e", "", "", "G2,e", "", "", "", ""
     ]
 };
 
-loopTime = voices.bas.length * eighths * 1000;
-
-voices.bas.forEach((entry, i) => {
-    if (entry) {
-        basSched.push({
-            freq: scale[entry],
-            time: i * eighths
-        });
+// kill proto
+let voices = {
+    sop: {
+        sound: sop,
+        sched: []
+    },
+    bas: {
+        sound: bas,
+        sched: []
     }
-});
+};
 
-let rhythmSchedule = {
+for (prop in voiceSchedule) {
+    // process
+    voiceSchedule[prop].forEach((entry, i) => {
+        if (entry) {
+            let data = entry.split(",");
+            // stuff
+            voices[prop].sched.push({
+                freq: scale[data[0]],
+                dur: meter.getDur(data[1]),
+                time: i * meter.eighth
+            });
+        }
+    });
+}
+
+rhythmSchedule = {
     kick:  [1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0,
             1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0,],
 
@@ -129,31 +153,29 @@ let rhythmSchedule = {
             1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,]
 };
 
+// kill proto
 let rhythm = {
     kick: {
         sound: kick,
-        time: []
+        sched: []
     },
     snare: {
         sound: snare,
-        time: []
+        sched: []
     },
     hihat: {
         sound: hihat,
-        time: []
+        sched: []
     }
 };
-let prop;
 
 for (prop in rhythmSchedule) {
-    if (rhythmSchedule.hasOwnProperty(prop)) {
 
-        rhythmSchedule[prop].forEach((entry, i) => {
-            if (entry) {
-                rhythm[prop].time.push(i * eighths);
-            }
-        });
-    }
+    rhythmSchedule[prop].forEach((entry, i) => {
+        if (entry) {
+            rhythm[prop].sched.push(i * meter.eighth);
+        }
+    });
 }
 
 (function() {
@@ -169,16 +191,18 @@ for (prop in rhythmSchedule) {
         timer.progress(tStamp);
 
         if (counter < 40) {             // 50 is arbitrary, could be less
-            basSched.forEach(ele => {
-                bas.play(counter / 1000 + ele.time, ele.freq, eighths);
-            });
+
+            for (prop in voices) {
+                voices[prop].sched.forEach(ele => {
+                    voices[prop].sound.play(counter / 1000 + ele.time,
+                            ele.freq, ele.dur);
+                });
+            }
 
             for (prop in rhythm) {
-                if (rhythm.hasOwnProperty(prop)) {
-                    rhythm[prop].time.forEach(ele => {
-                        rhythm[prop].sound.trigger(counter / 1000 + ele);
-                    });
-                }
+                rhythm[prop].sched.forEach(ele => {
+                    rhythm[prop].sound.trigger(counter / 1000 + ele);
+                });
             }
 
             counter = counter + loopTime;
@@ -190,7 +214,52 @@ for (prop in rhythmSchedule) {
     main();
 }());
 
-},{"./hihat":1,"./kick":2,"./scale":4,"./snare":5,"./timer":6,"./tone":7}],4:[function(require,module,exports){
+},{"./hihat":1,"./kick":2,"./meter":4,"./scale":5,"./snare":6,"./timer":7,"./tone":8}],4:[function(require,module,exports){
+function Meter(tempo) {
+    "use strict";
+    this.tempo = tempo;
+
+    this.quarter    = 60 / tempo;
+    this.half       = this.quarter * 2;
+    this.whole      = this.quarter * 4;
+    this.eighth     = this.quarter / 2;
+    this.sixteenth  = this.quarter / 4;
+}
+
+Meter.prototype.getDur = function(string) {
+    let dur = 0,
+        l = string.length,
+        i;
+
+    for (i = 0; i < l; i++) {
+
+        switch (string[i]) {
+            case "q":
+                dur += this.quarter;
+                break;
+            case "h":
+                dur += this.half;
+                break;
+            case "w":
+                dur += this.whole;
+                break;
+            case "e":
+                dur += this.eighth;
+                break;
+            case "s":
+                dur += this.sixteenth;
+                break;
+            default:
+                // no default
+        }
+    }
+
+    return dur;
+};
+
+module.exports = Meter;
+
+},{}],5:[function(require,module,exports){
 module.exports = (function() {
     "use strict";
 
@@ -219,7 +288,7 @@ module.exports = (function() {
     return scale;
 }());
 
-},{}],5:[function(require,module,exports){
+},{}],6:[function(require,module,exports){
 // Snare Drum Synthesis
 //
 // Special thanks to Chris Lowis for the article:
@@ -290,7 +359,7 @@ Snare.prototype.trigger = function(triggerTime) {
 
 module.exports = Snare;
 
-},{}],6:[function(require,module,exports){
+},{}],7:[function(require,module,exports){
 module.exports = {
     previous: 0,
     delta: 0,
@@ -308,7 +377,7 @@ module.exports = {
     }
 };
 
-},{}],7:[function(require,module,exports){
+},{}],8:[function(require,module,exports){
 function Tone(ctx, type) {
     "use strict";
     this.ctx = ctx;

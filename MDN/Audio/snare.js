@@ -49,7 +49,8 @@ Snare.prototype.setup = function() {
     this.oscGain.connect(this.ctx.destination);
 };
 
-Snare.prototype.trigger = function(time) {
+Snare.prototype.trigger = function(triggerTime) {
+    let time = this.ctx.currentTime + triggerTime;
     this.setup();
 
     this.noiseGain.gain.setValueAtTime(1, time);

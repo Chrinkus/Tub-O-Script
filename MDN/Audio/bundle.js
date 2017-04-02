@@ -16,7 +16,8 @@ Kick.prototype.setup = function() {
     this.gainOsc.connect(this.ctx.destination);
 };
 
-Kick.prototype.trigger = function(time) {
+Kick.prototype.trigger = function(triggerTime) {
+    let time = this.ctx.currentTime + triggerTime;
     this.setup();
 
     this.osc.frequency.setValueAtTime(150, time);
@@ -32,65 +33,144 @@ Kick.prototype.trigger = function(time) {
 module.exports = Kick;
 
 },{}],2:[function(require,module,exports){
-let Kick        = require("./kick");
-let Snare       = require("./snare");
-let Tone        = require("./tone");
+var Tone        = require("./tone");
+var Kick        = require("./kick");
+var Snare       = require("./snare");
+var scale       = require("./scale");
+var timer       = require("./timer");
 
+//let canvas = document.getElementById("viewport");
+//let ctx = canvas.getContext("2d");
 let audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-let now = audioCtx.currentTime;
 
-let twoBars = {
-
-    tone:  [1, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0],
-    kick:  [1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0],
-    snare: [0, 0, 1, 1, 0, 0, 1, 0, 0, 0, 1, 1, 0, 0, 1, 0]
-};
-
+let bas = new Tone(audioCtx, "square");
 let kick = new Kick(audioCtx);
 let snare = new Snare(audioCtx);
-let tone = new Tone(audioCtx);
+
+let basSched = [];
+let voices = null;
 
 let tempo = 120;
-let beat = 60 / tempo;
-let eighths = beat / 2;
+let quarters = 60 / tempo;
+let eighths = quarters / 2;
 
-let toneSched = [];
+let loopTime;
 
-twoBars.tone.forEach((ele, i) => {
-    if (ele) {
-        toneSched.push(i * eighths);
+voices = {
+    bas: [
+        "D2", "", "", "D2", "", "", "", "",
+        "D2", "", "", "D2", "", "", "", "",
+        "C2", "", "", "C2", "", "", "", "",
+        "G2", "", "", "G2", "", "", "", ""
+    ]
+};
+
+loopTime = voices.bas.length * eighths * 1000;
+
+voices.bas.forEach((entry, i) => {
+    if (entry) {
+        basSched.push({
+            freq: scale[entry],
+            time: i * eighths
+        });
     }
 });
 
-let kickSched = [];
+let rhythmSchedule = {
+    kick:  [1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0,
+            1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0,],
 
-twoBars.kick.forEach((ele, i) => {
-    if (ele) {
-        kickSched.push(i * eighths);
+    snare: [0, 0, 1, 1, 0, 0, 1, 0, 0, 0, 1, 1, 0, 0, 1, 0,
+            0, 0, 1, 1, 0, 0, 1, 0, 0, 0, 1, 1, 0, 0, 1, 0,]
+};
+
+let rhythm = {
+    kick: {
+        sound: kick,
+        time: []
+    },
+    snare: {
+        sound: snare,
+        time: []
     }
-});
+};
+let prop;
 
-let snareSched = [];
+for (prop in rhythmSchedule) {
+    if (rhythmSchedule.hasOwnProperty(prop)) {
 
-twoBars.snare.forEach((ele, i) => {
-    if (ele) {
-        snareSched.push(i * eighths);
+        rhythmSchedule[prop].forEach((entry, i) => {
+            if (entry) {
+                rhythm[prop].time.push(i * eighths);
+            }
+        });
     }
-});
+}
 
-kickSched.forEach(ele => {
-    kick.trigger(now + ele);
-});
+(function() {
+    "use strict";
+    let counter = 1;            // so when div by 1000 it doesn't throw error
+    let stopMain;
 
-snareSched.forEach(ele => {
-    snare.trigger(now + ele);
-});
+    function main(tStamp) {
+        let prop;
 
-toneSched.forEach(ele => {
-    tone.play(now + ele, 130.81, eighths)
-});
+        stopMain = window.requestAnimationFrame(main);
 
-},{"./kick":1,"./snare":3,"./tone":4}],3:[function(require,module,exports){
+        timer.progress(tStamp);
+
+        if (counter < 20) {             // 50 is arbitrary, could be less
+            basSched.forEach(ele => {
+                bas.play(counter / 1000 + ele.time, ele.freq, eighths);
+            });
+
+            for (prop in rhythm) {
+                if (rhythm.hasOwnProperty(prop)) {
+                    rhythm[prop].time.forEach(ele => {
+                        rhythm[prop].sound.trigger(counter / 1000 + ele);
+                    });
+                }
+            }
+
+            counter = counter + loopTime;
+        }
+
+        counter -= timer.delta;
+    }
+
+    main();
+}());
+
+},{"./kick":1,"./scale":3,"./snare":4,"./timer":5,"./tone":6}],3:[function(require,module,exports){
+module.exports = (function() {
+    "use strict";
+
+    const A = 27.5;
+    const SEMITONES = ["A", "A#/Bb", "B", "C", "C#/Db", "D",
+                       "D#/Eb", "E", "F", "F#/Gb", "G", "G#/Ab"];
+    let scale = {};
+    let oct = 0;
+    let i, j;
+
+    function getFrequency(centOffset) {
+        return Math.pow(2, (centOffset / 1200)) * A;
+    }
+
+    for (i = 0; i < 9; i++) {
+
+        for (j = 0; j < 12; j++) {
+            scale[SEMITONES[j] + oct] = getFrequency(i * 1200 + (j * 100));
+
+            if (SEMITONES[j + 1] === "C") {
+                oct += 1;
+            }
+        }
+    }
+
+    return scale;
+}());
+
+},{}],4:[function(require,module,exports){
 // Snare Drum Synthesis
 //
 // Special thanks to Chris Lowis for the article:
@@ -142,7 +222,8 @@ Snare.prototype.setup = function() {
     this.oscGain.connect(this.ctx.destination);
 };
 
-Snare.prototype.trigger = function(time) {
+Snare.prototype.trigger = function(triggerTime) {
+    let time = this.ctx.currentTime + triggerTime;
     this.setup();
 
     this.noiseGain.gain.setValueAtTime(1, time);
@@ -160,7 +241,25 @@ Snare.prototype.trigger = function(time) {
 
 module.exports = Snare;
 
-},{}],4:[function(require,module,exports){
+},{}],5:[function(require,module,exports){
+module.exports = {
+    previous: 0,
+    delta: 0,
+
+    progress: function(tStamp) {
+        "use strict";
+
+        if (!this.previous) {
+            this.previous = tStamp;
+            return;
+        }
+
+        this.delta = tStamp - this.previous;
+        this.previous = tStamp;
+    }
+};
+
+},{}],6:[function(require,module,exports){
 function Tone(ctx, type) {
     "use strict";
     this.ctx = ctx;
@@ -177,11 +276,12 @@ Tone.prototype.setup = function() {
     this.gainEnv.connect(this.ctx.destination);
 };
 
-Tone.prototype.play = function(time, freq, dur) {
+Tone.prototype.play = function(triggerTime, freq, dur) {
+    let time = this.ctx.currentTime + triggerTime;
     this.setup();
 
     this.osc.frequency.setValueAtTime(freq, time);
-    this.gainEnv.gain.setValueAtTime(0.5, time);
+    this.gainEnv.gain.setValueAtTime(0.2, time);
 
     this.osc.start(time);
     this.osc.stop(time + dur);

@@ -14,11 +14,12 @@ Tone.prototype.setup = function() {
     this.gainEnv.connect(this.ctx.destination);
 };
 
-Tone.prototype.play = function(time, freq, dur) {
+Tone.prototype.play = function(triggerTime, freq, dur) {
+    let time = this.ctx.currentTime + triggerTime;
     this.setup();
 
     this.osc.frequency.setValueAtTime(freq, time);
-    this.gainEnv.gain.setValueAtTime(0.5, time);
+    this.gainEnv.gain.setValueAtTime(0.2, time);
 
     this.osc.start(time);
     this.osc.stop(time + dur);

@@ -3,20 +3,22 @@
 // Special thanks to Chris Lowis for the article:
 // https://dev.opera.com/articles/drum-sounds-webaudio/
 
-function Kick(ctx) {
+function Kick(ctx, master) {
     "use strict";
     this.ctx = ctx;
+    this.master = master || null;
 }
 
 Kick.prototype.setup = function() {
     this.osc = this.ctx.createOscillator();
     this.gainOsc = this.ctx.createGain();
     this.osc.connect(this.gainOsc);
-    this.gainOsc.connect(this.ctx.destination);
+
+    this.gainOsc.connect(this.master ? this.master : this.ctx.destination);
 };
 
-Kick.prototype.trigger = function(triggerTime) {
-    let time = this.ctx.currentTime + triggerTime;
+Kick.prototype.play = function(offset) {
+    let time = this.ctx.currentTime + offset;
     this.setup();
 
     this.osc.frequency.setValueAtTime(150, time);
@@ -29,4 +31,15 @@ Kick.prototype.trigger = function(triggerTime) {
     this.osc.stop(time + 0.5);
 };
 
-module.exports = Kick;
+if (typeof module !== "undefined" && module.exports) {
+    module.exports = Kick;
+}
+
+/*
+// TEST
+let audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+let kick = new Kick(audioCtx);
+[0, 1, 2, 2.5, 3].forEach(entry => {
+    kick.play(entry);
+});
+*/

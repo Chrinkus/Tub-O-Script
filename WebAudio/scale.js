@@ -1,4 +1,4 @@
-module.exports = (function() {
+var scale = (function() {
     "use strict";
 
     const A = 27.5;
@@ -25,3 +25,12 @@ module.exports = (function() {
 
     return scale;
 }());
+
+if (typeof module !== "undefined" && module.exports) {
+    module.exports = scale;
+}
+
+/*
+// TEST
+console.log(scale["A4"]);       // 440
+*/

@@ -68,6 +68,8 @@ let track = (function() {
                 });
             }
         });
+
+        track[prop].loopTime = voicePlan[prop].length * meter[units];
     }
     
     for (prop in rhythmPlan) {
@@ -79,12 +81,13 @@ let track = (function() {
                 });
             }
         });
+
+        track[prop].loopTime = rhythmPlan[prop].length * meter[units];
     }
 
     // Properties needed for looping
     for (prop in track) {
         track[prop].active = false;
-        track[prop].loopTime = track[prop].schedule.length * meter[units];
     }
 
     return track;
@@ -107,9 +110,10 @@ if (typeof module !== "undefined" && module.exports) {
     module.exports = track;
 }
 
-
+/*
 // TEST
 console.log(track.lead.schedule);           // list of objs w/freq, dur & when
 console.log(track.kick.loopTime);           // 8
 console.log(track.snare.schedule[2].when);  // 1.5
 console.log(track.bass.active);             // false
+*/

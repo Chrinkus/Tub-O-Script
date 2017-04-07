@@ -23,10 +23,15 @@ audio.init = function(track) {
     this.setRoutingGraph();
     track.init(this.ctx, this.masterVoices, this.masterRhythm);
 
+    // Mixing
+    this.masterVoices.gain.setValueAtTime(0.3, this.ctx.currentTime);
+    track.bass.schedule.forEach(entry => {
+        entry.gain = 0.7;
+    });
+
     // TEST
     track.started = true;
     track.startTime = this.ctx.currentTime;
-    this.masterVoices.gain.setValueAtTime(0.3, this.ctx.currentTime);
 };
 
 audio.queueAhead = function(track) {
@@ -37,6 +42,7 @@ audio.queueAhead = function(track) {
         lookAheadTime   = relativeTime + lookAhead,
         prop;
 
+    // TODO - There has to be a better way to do this
     function scheduler(part) {
         let relativeMod     = relativeTime % part.loopTime,
             lookAheadMod    = lookAheadTime % part.loopTime;

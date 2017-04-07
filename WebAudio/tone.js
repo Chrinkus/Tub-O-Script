@@ -20,6 +20,7 @@ Tone.prototype.play = function(offset, dataObj) {
      *   frequency  "number"    sound in Hz
      *   duration   "number"    held length of note
      *   when       "number"    time location in loop (not used here)
+     *   gain       "number"    between -1 and 1 for track mixing
      */
 
     let time = this.ctx.currentTime + offset;

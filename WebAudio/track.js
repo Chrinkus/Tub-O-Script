@@ -78,7 +78,8 @@ let track = (function() {
         rhythmPlan[prop].forEach((entry, i) => {
             if (entry) {
                 track[prop].schedule.push({
-                    when: i * meter[units]
+                    when: i * meter[units],
+                    gain: 1
                 });
             }
         });
@@ -89,11 +90,6 @@ let track = (function() {
     // Properties needed for looping
     for (prop in track) {
         track[prop].active = true;
-
-        // Mixing
-        if (prop === "bass") {
-            track[prop].gain = 0.7;
-        }
     }
 
     return track;

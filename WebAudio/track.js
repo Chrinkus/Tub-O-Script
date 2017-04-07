@@ -64,7 +64,8 @@ let track = (function() {
                 track[prop].schedule.push({
                     frequency: scale[data[0]],
                     duration: meter.getDur(data[1]),
-                    when: i * meter[units]
+                    when: i * meter[units],
+                    gain: 1
                 });
             }
         });
@@ -87,7 +88,12 @@ let track = (function() {
 
     // Properties needed for looping
     for (prop in track) {
-        track[prop].active = false;
+        track[prop].active = true;
+
+        // Mixing
+        if (prop === "bass") {
+            track[prop].gain = 0.7;
+        }
     }
 
     return track;

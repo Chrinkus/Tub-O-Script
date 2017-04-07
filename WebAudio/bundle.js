@@ -27,23 +27,30 @@ audio.init = function(track) {
     // TEST
     track.started = true;
     track.startTime = this.ctx.currentTime;
-    track.bass.active = true;       // still locks up browser with one part
+    this.masterVoices.gain.setValueAtTime(0.3, this.ctx.currentTime);
 };
 
 audio.queueAhead = function(track) {
     "use strict";
     let now             = this.ctx.currentTime,
-        lookAhead       = 0.1,
+        lookAhead       = 0.2,
         relativeTime    = now - track.startTime,
         lookAheadTime   = relativeTime + lookAhead,
         prop;
 
     function scheduler(part) {
-        let lookAheadMod = lookAheadTime % part.loopTime;
+        let relativeMod     = relativeTime % part.loopTime,
+            lookAheadMod    = lookAheadTime % part.loopTime;
 
-        while (part.schedule[0].when < lookAheadMod) {
-            console.log(lookAheadMod);
-            part.queue(part.schedule[0].when - relativeTime % part.loopTime);
+        if (lookAheadMod < relativeMod && part.iterator > 1) {
+            part.iterator = 0;
+        } 
+
+        while (part.iterator < part.schedule.length &&
+                part.schedule[part.iterator].when < lookAheadMod) {
+
+            part.queue(part.schedule[part.iterator].when - relativeMod);
+            part.iterator += 1;
         }
     }
 
@@ -58,12 +65,15 @@ audio.queueAhead = function(track) {
 // TEST
 (function() {
     "use strict";
+    let counter = 0
     audio.init(track);
 
     function main() {
         window.requestAnimationFrame(main);
 
-        audio.queueAhead(track);
+        if (counter % 4 === 0) {
+            audio.queueAhead(track);
+        }
     }
     main();
 }());
@@ -255,14 +265,15 @@ function Part(name) {
     this.sound = null;
     this.schedule = [];
     this.loopTime = 0;
+    this.iterator = 0;
 }
 
 Part.prototype.queue = function(offset) {
-    this.sound.play(offset, this.schedule[0]);
-    this.schedule.push(this.schedule.shift());
+    if (offset < 0) {
+        offset += this.loopTime;
+    }
 
-    // TEST
-    console.log(this.schedule[0]);
+    this.sound.play(offset, this.schedule[this.iterator]);
 };
 
 if (typeof module !== "undefined" && module.exports) {
@@ -419,7 +430,7 @@ Tone.prototype.play = function(offset, dataObj) {
     this.setup();
 
     this.osc.frequency.setValueAtTime(dataObj.frequency, time);
-    this.gainEnv.gain.setValueAtTime(1, time);
+    this.gainEnv.gain.setValueAtTime(dataObj.gain, time);
 
     this.osc.start(time);
     this.osc.stop(time + dataObj.duration);
@@ -505,7 +516,8 @@ let track = (function() {
                 track[prop].schedule.push({
                     frequency: scale[data[0]],
                     duration: meter.getDur(data[1]),
-                    when: i * meter[units]
+                    when: i * meter[units],
+                    gain: 1
                 });
             }
         });
@@ -528,7 +540,12 @@ let track = (function() {
 
     // Properties needed for looping
     for (prop in track) {
-        track[prop].active = false;
+        track[prop].active = true;
+
+        // Mixing
+        if (prop === "bass") {
+            track[prop].gain = 0.7;
+        }
     }
 
     return track;

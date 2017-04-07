@@ -26,23 +26,30 @@ audio.init = function(track) {
     // TEST
     track.started = true;
     track.startTime = this.ctx.currentTime;
-    track.bass.active = true;       // still locks up browser with one part
+    this.masterVoices.gain.setValueAtTime(0.3, this.ctx.currentTime);
 };
 
 audio.queueAhead = function(track) {
     "use strict";
     let now             = this.ctx.currentTime,
-        lookAhead       = 0.1,
+        lookAhead       = 0.2,
         relativeTime    = now - track.startTime,
         lookAheadTime   = relativeTime + lookAhead,
         prop;
 
     function scheduler(part) {
-        let lookAheadMod = lookAheadTime % part.loopTime;
+        let relativeMod     = relativeTime % part.loopTime,
+            lookAheadMod    = lookAheadTime % part.loopTime;
 
-        while (part.schedule[0].when < lookAheadMod) {
-            console.log(lookAheadMod);
-            part.queue(part.schedule[0].when - relativeTime % part.loopTime);
+        if (lookAheadMod < relativeMod && part.iterator > 1) {
+            part.iterator = 0;
+        } 
+
+        while (part.iterator < part.schedule.length &&
+                part.schedule[part.iterator].when < lookAheadMod) {
+
+            part.queue(part.schedule[part.iterator].when - relativeMod);
+            part.iterator += 1;
         }
     }
 
@@ -57,12 +64,15 @@ audio.queueAhead = function(track) {
 // TEST
 (function() {
     "use strict";
+    let counter = 0
     audio.init(track);
 
     function main() {
         window.requestAnimationFrame(main);
 
-        audio.queueAhead(track);
+        if (counter % 4 === 0) {
+            audio.queueAhead(track);
+        }
     }
     main();
 }());

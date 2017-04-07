@@ -26,7 +26,7 @@ Tone.prototype.play = function(offset, dataObj) {
     this.setup();
 
     this.osc.frequency.setValueAtTime(dataObj.frequency, time);
-    this.gainEnv.gain.setValueAtTime(1, time);
+    this.gainEnv.gain.setValueAtTime(dataObj.gain, time);
 
     this.osc.start(time);
     this.osc.stop(time + dataObj.duration);

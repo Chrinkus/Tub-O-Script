@@ -14,14 +14,15 @@ function Part(name) {
     this.sound = null;
     this.schedule = [];
     this.loopTime = 0;
+    this.iterator = 0;
 }
 
 Part.prototype.queue = function(offset) {
-    this.sound.play(offset, this.schedule[0]);
-    this.schedule.push(this.schedule.shift());
+    if (offset < 0) {
+        offset += this.loopTime;
+    }
 
-    // TEST
-    console.log(this.schedule[0]);
+    this.sound.play(offset, this.schedule[this.iterator]);
 };
 
 if (typeof module !== "undefined" && module.exports) {

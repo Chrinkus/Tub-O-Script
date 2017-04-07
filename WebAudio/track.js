@@ -18,10 +18,16 @@ let track = (function() {
 
     meter.tempo = 120;
 
+    // Define track properties
     voiceParts.forEach(part => {
         track[part] = new Part(part);
     });
 
+    rhythmParts.forEach(part => {
+        track[part] = new Part(part);
+    });
+
+    // The music
     voicePlan = {
         lead: [
             "A3,hq", "", "", "", "", "", "F#/Gb3,q", "",
@@ -37,10 +43,20 @@ let track = (function() {
         ]
     };
 
+    rhythmPlan = {
+        kick:  [1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0,
+                1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0,],
+
+        snare: [0, 0, 1, 1, 0, 0, 1, 0, 0, 0, 1, 1, 0, 0, 1, 0,
+                0, 0, 1, 1, 0, 0, 1, 0, 0, 0, 1, 1, 0, 0, 1, 0,],
+
+        hihat: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+                1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,]
+    };
+
+    // Parse music
     for (prop in voicePlan) {
 
-        track[prop].loopTime = voicePlan[prop].length * meter[units];
-        
         voicePlan[prop].forEach((entry, i) => {
             if (entry) {
                 let data = entry.split(",");
@@ -54,24 +70,7 @@ let track = (function() {
         });
     }
     
-    rhythmParts.forEach(part => {
-        track[part] = new Part(part);
-    });
-
-    rhythmPlan = {
-        kick:  [1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0,
-                1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0,],
-
-        snare: [0, 0, 1, 1, 0, 0, 1, 0, 0, 0, 1, 1, 0, 0, 1, 0,
-                0, 0, 1, 1, 0, 0, 1, 0, 0, 0, 1, 1, 0, 0, 1, 0,],
-
-        hihat: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-                1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,]
-    };
-
     for (prop in rhythmPlan) {
-
-        track[prop].loopTime = rhythmPlan[prop].length * meter[units];
 
         rhythmPlan[prop].forEach((entry, i) => {
             if (entry) {
@@ -82,11 +81,20 @@ let track = (function() {
         });
     }
 
+    // Properties needed for looping
+    for (prop in track) {
+        track[prop].active = false;
+        track[prop].loopTime = track[prop].schedule.length * meter[units];
+    }
+
     return track;
 }());
 
 track.init = function(ctx, masterVoices, masterRhythm) {
     "use strict";
+    this.started = false;
+    this.startTime = 0;
+
     this.lead.sound = new Tone(ctx, "triangle", masterVoices);
     this.bass.sound = new Tone(ctx, "sawtooth", masterVoices);
 
@@ -104,6 +112,4 @@ if (typeof module !== "undefined" && module.exports) {
 console.log(track.lead.schedule);           // list of objs w/freq, dur & when
 console.log(track.kick.loopTime);           // 8
 console.log(track.snare.schedule[2].when);  // 1.5
-track.init("CTX", "VOICES", "RHYTHM");
-console.log(track.bass.sound.type);         // sawtooth
-console.log(track.hihat.sound.master);      // RHYTHM
+console.log(track.bass.active);             // false

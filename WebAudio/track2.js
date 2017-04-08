@@ -65,7 +65,7 @@ let track = (function() {
                     oscFrequency: scale[data[0]],
                     duration: meter.getDur(data[1]),
                     when: i * meter["eighth"],
-                    gain: 0.6,
+                    oscGain: 1,
                     lfoFrequency: 12,
                     lfoGain: 50
                 });
@@ -73,6 +73,7 @@ let track = (function() {
         });
 
         track[prop].loopTime = voicePlan[prop].length * meter["eighth"];
+        track[prop].active = false;
     }
     
     for (prop in rhythmPlan) {
@@ -87,15 +88,16 @@ let track = (function() {
         });
 
         track[prop].loopTime = rhythmPlan[prop].length * meter[units];
-    }
-
-    // Properties needed for looping
-    for (prop in track) {
         track[prop].active = false;
     }
 
     return track;
 }());
+
+track.mix = function(masterVoices) {
+    "use strict";
+    masterVoices.gain.value = 0.3;
+};
 
 track.init = function(ctx, masterVoices, masterRhythm) {
     "use strict";
@@ -107,6 +109,26 @@ track.init = function(ctx, masterVoices, masterRhythm) {
     this.kick.sound = new Kick(ctx, masterRhythm);
     this.snare.sound = new Snare(ctx, masterRhythm);
     this.hihat.sound = new Hihat(ctx, masterRhythm);
+
+    this.mix(masterVoices);
+};
+
+track.start = function(time) {
+    "use strict";
+    this.startTime = time;
+};
+
+track.stop = function() {
+    "use strict";
+    let prop;
+
+    this.startTime = 0;
+
+    for (prop in this) {
+        if (this[prop].active) {
+            this[prop].active = false;
+        }
+    }
 };
 
 if (typeof module !== "undefined" && module.exports) {

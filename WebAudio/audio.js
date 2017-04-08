@@ -1,4 +1,4 @@
-let track           = require("./track2");
+let track1          = require("./track2");
 
 let audio = Object.create(null);
 
@@ -18,30 +18,68 @@ audio.setRoutingGraph = function() {
     this.compressor.connect(this.ctx.destination);
 };
 
-audio.init = function(track) {
+audio.init = function() {
     "use strict";
     this.setRoutingGraph();
-    track.init(this.ctx, this.masterVoices, this.masterRhythm);
-
-    // Mixing
-    this.masterVoices.gain.setValueAtTime(0.3, this.ctx.currentTime);
-    track.kick.active = true;
-    /*
-    track.bass.schedule.forEach(entry => {
-        entry.gain = 0.7;
-    });
-    */
-
-    // TEST
-    track.started = true;
-    track.startTime = this.ctx.currentTime;
 };
 
-audio.queueAhead = function(track) {
+audio.loadTrack = function(track) {
+    "use strict";
+    this.track = track;
+    this.track.init(this.ctx, this.masterVoices, this.masterRhythm);
+};
+
+audio.progress = function(i) {
+    /* SQUARES SPECIFIC
+     * While most of the audio object is meant to be repurposed, this method
+     * is specific to what needs to happen in Squares
+     */
+    "use strict";
+
+    function activate(arr) {
+        arr.forEach(entry => this.track[entry].active = true);
+    }
+
+    switch(i) {
+        case 0:
+            this.loadTrack(track1);
+            this.track.start(this.ctx.currentTime);
+            activate(["bass", "hihat"]);
+            break;
+
+        case 1:
+            activate(["kick", "snare"]);
+            break;
+
+        case 2:
+            activate(["lead"]);
+            break;
+
+        case 3:
+            this.track.stop();
+            this.loadTrack(track2);
+            this.track.start(this.ctx.currentTime);
+            activate(["kick", "snare"]);
+            break;
+
+        case 4:
+            activate(["hihat", "lead"]);
+            break;
+
+        case 5:
+            this.track.stop();
+            break;
+
+        default:
+            console.log("Exceeded audio.progress switch range");
+    }
+};
+
+audio.queueAhead = function() {
     "use strict";
     let now             = this.ctx.currentTime,
         lookAhead       = 0.2,
-        relativeTime    = now - track.startTime,
+        relativeTime    = now - this.track.startTime,
         lookAheadTime   = relativeTime + lookAhead,
         prop;
 
@@ -62,26 +100,27 @@ audio.queueAhead = function(track) {
         }
     }
 
-    for (prop in track) {
+    for (prop in this.track) {
 
-        if (track[prop].active) {
-            scheduler(track[prop]);
+        if (this.track[prop].active) {
+            scheduler(this.track[prop]);
         }
     }
 };
 
-// TEST
+/* TEST
 (function() {
     "use strict";
     let counter = 0
-    audio.init(track);
+    audio.init(track1);
 
     function main() {
         window.requestAnimationFrame(main);
 
         if (counter % 4 === 0) {
-            audio.queueAhead(track);
+            audio.queueAhead(track1);
         }
     }
     main();
 }());
+*/

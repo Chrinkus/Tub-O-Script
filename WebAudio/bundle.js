@@ -1,5 +1,5 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
-let track           = require("./track2");
+let track1          = require("./track2");
 
 let audio = Object.create(null);
 
@@ -23,16 +23,7 @@ audio.init = function(track) {
     "use strict";
     this.setRoutingGraph();
     track.init(this.ctx, this.masterVoices, this.masterRhythm);
-
-    // Mixing
-    this.masterVoices.gain.setValueAtTime(0.3, this.ctx.currentTime);
-    track.kick.active = true;
-    /*
-    track.bass.schedule.forEach(entry => {
-        entry.gain = 0.7;
-    });
-    */
-
+    
     // TEST
     track.started = true;
     track.startTime = this.ctx.currentTime;
@@ -75,17 +66,18 @@ audio.queueAhead = function(track) {
 (function() {
     "use strict";
     let counter = 0
-    audio.init(track);
+    audio.init(track1);
 
     function main() {
         window.requestAnimationFrame(main);
 
         if (counter % 4 === 0) {
-            audio.queueAhead(track);
+            audio.queueAhead(track1);
         }
     }
     main();
 }());
+
 
 },{"./track2":9}],2:[function(require,module,exports){
 // Hihat Synthesis
@@ -226,7 +218,7 @@ LfoTone.prototype.play = function(offset, dataObj) {
      *   lfoFrequency   "number"    modulation signal in Hz
      *   duration       "number"    held length of note
      *   when           "number"    time location in loop (not used here)
-     *   gain           "number"    between -1 and 1 for track mixing
+     *   oscGain        "number"    between -1 and 1 for track mixing
      *   lfoGain        "number"    amplitude of lfo
      */
 
@@ -237,7 +229,7 @@ LfoTone.prototype.play = function(offset, dataObj) {
     this.gainLfo.gain.setValueAtTime(dataObj.lfoGain, time);
 
     this.osc.frequency.setValueAtTime(dataObj.oscFrequency, time);
-    this.gainOsc.gain.setValueAtTime(dataObj.gainOsc, time);
+    this.gainOsc.gain.setValueAtTime(dataObj.oscGain, time);
 
     this.osc.start(time);
     this.lfo.start(time);
@@ -544,7 +536,7 @@ let track = (function() {
                     oscFrequency: scale[data[0]],
                     duration: meter.getDur(data[1]),
                     when: i * meter["eighth"],
-                    gain: 0.6,
+                    oscGain: 1,
                     lfoFrequency: 12,
                     lfoGain: 50
                 });
@@ -552,6 +544,7 @@ let track = (function() {
         });
 
         track[prop].loopTime = voicePlan[prop].length * meter["eighth"];
+        track[prop].active = true;
     }
     
     for (prop in rhythmPlan) {
@@ -566,15 +559,17 @@ let track = (function() {
         });
 
         track[prop].loopTime = rhythmPlan[prop].length * meter[units];
-    }
-
-    // Properties needed for looping
-    for (prop in track) {
-        track[prop].active = false;
+        track[prop].active = true;
     }
 
     return track;
 }());
+
+track.mix = function(masterVoices) {
+    "use strict";
+    masterVoices.gain.value = 0.3;
+    //this.lead.schedule.forEach(entry => entry.oscGain = 0.5);
+};
 
 track.init = function(ctx, masterVoices, masterRhythm) {
     "use strict";
@@ -586,6 +581,8 @@ track.init = function(ctx, masterVoices, masterRhythm) {
     this.kick.sound = new Kick(ctx, masterRhythm);
     this.snare.sound = new Snare(ctx, masterRhythm);
     this.hihat.sound = new Hihat(ctx, masterRhythm);
+
+    this.mix(masterVoices);
 };
 
 if (typeof module !== "undefined" && module.exports) {

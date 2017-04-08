@@ -24,7 +24,7 @@ LfoTone.prototype.play = function(offset, dataObj) {
      *   lfoFrequency   "number"    modulation signal in Hz
      *   duration       "number"    held length of note
      *   when           "number"    time location in loop (not used here)
-     *   gain           "number"    between -1 and 1 for track mixing
+     *   oscGain        "number"    between -1 and 1 for track mixing
      *   lfoGain        "number"    amplitude of lfo
      */
 
@@ -35,7 +35,7 @@ LfoTone.prototype.play = function(offset, dataObj) {
     this.gainLfo.gain.setValueAtTime(dataObj.lfoGain, time);
 
     this.osc.frequency.setValueAtTime(dataObj.oscFrequency, time);
-    this.gainOsc.gain.setValueAtTime(dataObj.gainOsc, time);
+    this.gainOsc.gain.setValueAtTime(dataObj.oscGain, time);
 
     this.osc.start(time);
     this.lfo.start(time);

@@ -1,4 +1,4 @@
-let track           = require("./track");
+let track           = require("./track2");
 
 let audio = Object.create(null);
 
@@ -25,9 +25,12 @@ audio.init = function(track) {
 
     // Mixing
     this.masterVoices.gain.setValueAtTime(0.3, this.ctx.currentTime);
+    track.kick.active = true;
+    /*
     track.bass.schedule.forEach(entry => {
         entry.gain = 0.7;
     });
+    */
 
     // TEST
     track.started = true;

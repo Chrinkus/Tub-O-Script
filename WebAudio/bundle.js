@@ -1,5 +1,5 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
-let track           = require("./track");
+let track           = require("./track2");
 
 let audio = Object.create(null);
 
@@ -26,9 +26,12 @@ audio.init = function(track) {
 
     // Mixing
     this.masterVoices.gain.setValueAtTime(0.3, this.ctx.currentTime);
+    track.kick.active = true;
+    /*
     track.bass.schedule.forEach(entry => {
         entry.gain = 0.7;
     });
+    */
 
     // TEST
     track.started = true;
@@ -84,7 +87,7 @@ audio.queueAhead = function(track) {
     main();
 }());
 
-},{"./track":9}],2:[function(require,module,exports){
+},{"./track2":9}],2:[function(require,module,exports){
 // Hihat Synthesis
 //
 // Special thanks to Joe Sullivan for the article:
@@ -197,6 +200,72 @@ let kick = new Kick(audioCtx);
 */
 
 },{}],4:[function(require,module,exports){
+function LfoTone(ctx, type, master) {
+    "use strict";
+    this.ctx        = ctx;
+    this.type       = type;
+    this.master     = master || null;
+}
+
+LfoTone.prototype.setup = function() {
+    this.lfo        = this.ctx.createOscillator();
+    this.gainLfo    = this.ctx.createGain();
+    this.osc        = this.ctx.createOscillator();
+    this.osc.type   = this.type;
+    this.gainOsc    = this.ctx.createGain();
+
+    this.lfo.connect(this.gainLfo);
+    this.gainLfo.connect(this.osc.detune);
+    this.osc.connect(this.gainOsc);
+    this.gainOsc.connect(this.master ? this.master : this.ctx.destination);
+};
+
+LfoTone.prototype.play = function(offset, dataObj) {
+    /* dataObj
+     *   oscFrequency   "number"    sound in Hz
+     *   lfoFrequency   "number"    modulation signal in Hz
+     *   duration       "number"    held length of note
+     *   when           "number"    time location in loop (not used here)
+     *   gain           "number"    between -1 and 1 for track mixing
+     *   lfoGain        "number"    amplitude of lfo
+     */
+
+    let time = this.ctx.currentTime + offset;
+    this.setup();
+
+    this.lfo.frequency.setValueAtTime(dataObj.lfoFrequency, time);
+    this.gainLfo.gain.setValueAtTime(dataObj.lfoGain, time);
+
+    this.osc.frequency.setValueAtTime(dataObj.oscFrequency, time);
+    this.gainOsc.gain.setValueAtTime(dataObj.gainOsc, time);
+
+    this.osc.start(time);
+    this.lfo.start(time);
+    this.osc.stop(time + dataObj.duration);
+    this.lfo.stop(time + dataObj.duration);
+};
+
+if (typeof module !== "undefined" && module.exports) {
+    module.exports = LfoTone;
+}
+
+/* TEST
+let audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+let lfoTone = new LfoTone(audioCtx);
+let data = {
+    oscFrequency: 220,
+    lfoFrequency: 8,
+    duration: 1,
+    when: 0,
+    gain: 1,
+    lfoGain: 50
+};
+[0, 2, 4, 5, 6].forEach(entry => {
+    lfoTone.play(entry, data);
+});
+*/
+
+},{}],5:[function(require,module,exports){
 let meter = {
 
     set tempo(value) {
@@ -254,7 +323,7 @@ meter.tempo = 160;
 console.log(meter.getDur("q"));
 */
 
-},{}],5:[function(require,module,exports){
+},{}],6:[function(require,module,exports){
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
 // Part - Rhythm or Voice
 // 
@@ -286,7 +355,7 @@ if (typeof module !== "undefined" && module.exports) {
     module.exports = Part;
 }
 
-},{}],6:[function(require,module,exports){
+},{}],7:[function(require,module,exports){
 var scale = (function() {
     "use strict";
 
@@ -324,7 +393,7 @@ if (typeof module !== "undefined" && module.exports) {
 console.log(scale["A4"]);       // 440
 */
 
-},{}],7:[function(require,module,exports){
+},{}],8:[function(require,module,exports){
 // Snare Drum Synthesis
 //
 // Special thanks to Chris Lowis for the article:
@@ -407,56 +476,8 @@ let snare = new Snare(audioCtx);
 });
 */
 
-},{}],8:[function(require,module,exports){
-function Tone(ctx, type, master) {
-    "use strict";
-    this.ctx = ctx;
-    this.type = type;
-    this.master = master || null;
-}
-
-Tone.prototype.setup = function() {
-    this.osc = this.ctx.createOscillator();
-    this.gainEnv = this.ctx.createGain();
-
-    this.osc.type = this.type;
-
-    this.osc.connect(this.gainEnv);
-    this.gainEnv.connect(this.master ? this.master : this.ctx.destination);
-};
-
-Tone.prototype.play = function(offset, dataObj) {
-    /* dataObj
-     *   frequency  "number"    sound in Hz
-     *   duration   "number"    held length of note
-     *   when       "number"    time location in loop (not used here)
-     */
-
-    let time = this.ctx.currentTime + offset;
-    this.setup();
-
-    this.osc.frequency.setValueAtTime(dataObj.frequency, time);
-    this.gainEnv.gain.setValueAtTime(dataObj.gain, time);
-
-    this.osc.start(time);
-    this.osc.stop(time + dataObj.duration);
-};
-
-if (typeof module !== "undefined" && module.exports) {
-    module.exports = Tone;
-}
-
-/* TEST
-let audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-let tone = new Tone(audioCtx);
-let data = { frequency: 220, duration: 1, when: 0 };
-[0, 2, 4, 5, 6].forEach(entry => {
-    tone.play(entry, data);
-});
-*/
-
 },{}],9:[function(require,module,exports){
-let Tone        = require("./tone");
+let LfoTone     = require("./lfotone");
 let Kick        = require("./kick");
 let Snare       = require("./snare");
 let Hihat       = require("./hihat");
@@ -467,9 +488,9 @@ let scale       = require("./scale");
 let track = (function() {
     "use strict";
     let track           = Object.create(null),
-        voiceParts      = ["lead", "bass"],
+        voiceParts      = ["lead"],
         rhythmParts     = ["kick", "snare", "hihat"],
-        units           = "eighth",
+        units           = "sixteenth",
         voicePlan,
         rhythmPlan,
         prop;
@@ -488,28 +509,28 @@ let track = (function() {
     // The music
     voicePlan = {
         lead: [
-            "A3,hq", "", "", "", "", "", "F#/Gb3,q", "",
-            "C4,qe", "", "", "B3,q", "", "A3,q", "", "G3,e",
-            "A3,he", "", "", "", "", "E3,e", "G3,e", "D3,he",
-            "", "", "", "", "D3,e", "E3,e", "G3,e", "F#/Gb3,e"
-        ],
-        bass: [
-            "D2,e", "", "", "D2,e", "", "", "", "",
-            "D2,e", "", "", "D2,e", "", "", "", "",
-            "C2,e", "", "", "C2,e", "", "", "", "",
-            "G2,e", "", "", "G2,e", "", "", "", ""
+            "A4,hq", "", "", "", "", "", "F#/Gb4,q", "",
+            "C5,qe", "", "", "B4,q", "", "A4,q", "", "G4,e",
+            "A4,he", "", "", "", "", "E4,e", "G4,e", "D4,he",
+            "", "", "", "", "D4,e", "E4,e", "G4,e", "F#/Gb4,e"
         ]
     };
 
     rhythmPlan = {
-        kick:  [1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0,
-                1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0,],
+        kick:  [1, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 0,
+                1, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 0,],
 
-        snare: [0, 0, 1, 1, 0, 0, 1, 0, 0, 0, 1, 1, 0, 0, 1, 0,
-                0, 0, 1, 1, 0, 0, 1, 0, 0, 0, 1, 1, 0, 0, 1, 0,],
+        snare: [0, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0, 1, 0, 1, 1, 0,
+                0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 1, 0, 0, 0, 1,
+                0, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0, 1, 0, 1, 1, 0,
+                0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 1, 0, 0, 0, 1,],
 
-        hihat: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-                1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,]
+        hihat: [1, 1, 1, 1, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0,
+                0, 1, 1, 0, 1, 1, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0,
+                1, 1, 1, 1, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0,
+                0, 1, 1, 0, 1, 1, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0,]
     };
 
     // Parse music
@@ -520,15 +541,17 @@ let track = (function() {
                 let data = entry.split(",");
                 
                 track[prop].schedule.push({
-                    frequency: scale[data[0]],
+                    oscFrequency: scale[data[0]],
                     duration: meter.getDur(data[1]),
-                    when: i * meter[units],
-                    gain: 1
+                    when: i * meter["eighth"],
+                    gain: 0.6,
+                    lfoFrequency: 12,
+                    lfoGain: 50
                 });
             }
         });
 
-        track[prop].loopTime = voicePlan[prop].length * meter[units];
+        track[prop].loopTime = voicePlan[prop].length * meter["eighth"];
     }
     
     for (prop in rhythmPlan) {
@@ -547,7 +570,7 @@ let track = (function() {
 
     // Properties needed for looping
     for (prop in track) {
-        track[prop].active = true;
+        track[prop].active = false;
     }
 
     return track;
@@ -558,8 +581,7 @@ track.init = function(ctx, masterVoices, masterRhythm) {
     this.started = false;
     this.startTime = 0;
 
-    this.lead.sound = new Tone(ctx, "triangle", masterVoices);
-    this.bass.sound = new Tone(ctx, "sawtooth", masterVoices);
+    this.lead.sound = new LfoTone(ctx, "triangle", masterVoices);
 
     this.kick.sound = new Kick(ctx, masterRhythm);
     this.snare.sound = new Snare(ctx, masterRhythm);
@@ -578,4 +600,4 @@ console.log(track.snare.schedule[2].when);  // 1.5
 console.log(track.bass.active);             // false
 */
 
-},{"./hihat":2,"./kick":3,"./meter":4,"./part":5,"./scale":6,"./snare":7,"./tone":8}]},{},[1]);
+},{"./hihat":2,"./kick":3,"./lfotone":4,"./meter":5,"./part":6,"./scale":7,"./snare":8}]},{},[1]);

@@ -1,0 +1,9 @@
+W3Cx HTML5 CODING ESSENTIALS AND BEST PRACTICES
+
+Greater simplicity
+- "type" attributes are now optional
+- lots of new tags based on general ids & classes
+  - <main> main content or body of document
+    - there can only be one <main>
+  - no <content> due to so many other types
+    - after <article> <section> <aside> whats left?

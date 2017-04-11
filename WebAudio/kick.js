@@ -35,11 +35,9 @@ if (typeof module !== "undefined" && module.exports) {
     module.exports = Kick;
 }
 
-/*
 // TEST
 let audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 let kick = new Kick(audioCtx);
 [0, 1, 2, 2.5, 3].forEach(entry => {
     kick.play(entry);
 });
-*/

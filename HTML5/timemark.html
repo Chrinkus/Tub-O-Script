@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <title>Time &amp; Mark</title>
+        <link rel="stylesheet" href="timemark.css">
+        <!-- script src="script.js"></script -->
+    </head>
+    <body>
+        <h1>Time & Mark Tests</h1>
+
+        <section>
+            <h2>Time</h2>
+            <p>The time element contains both a human readable part between
+            the tags and a machine readable part in the datetime attribute.
+            While the spec initially only supported precise dates, now fuzzy
+            dates can be defined.</p>
+
+            <h3>Examples</h3>
+            <p>We open at <time>10:00</time> every morning.
+
+            <p>I have a meeting the
+            <time datetime="2012-02-14">Monday 14/02/2012</time>.</p>
+
+            <p>Blog posts from the year <time datetime="2012">2012</time>.</p>
+
+            <p>Archives, blog posts for <time datetime="2012-04">April 2012
+            </time>.</p>
+            <p>This recipe was published by Michel the
+            <time datetime="2012-04-16">April 16, 2012</time>.</p>
+
+            <h3>Furthermore..</h3>
+            <p>Local times can be defined by appending a "Z" to the timezone:
+            &#60;time datetime="09:00Z"&#62; is 9am, UTC.</p>
+            <p>Timezone offset may be indicated by a "+" or a "-" as in:
+            &#60;time datetime="09:00-5"&#62;.</p>
+
+            <h3>Durations</h3>
+            <p>In HTML5 &#60;time&#62; you can represent durations with the 
+            prefix "P" for period. Attributes are: "D" for days, "H" for hours
+            and "S" for seconds.</p>
+            <p>Thus &#60;time datetime="P4D"&#62; indicates a duration of 4
+            days. Further precision can be achieved by using a "T" after the
+            "P" as in &#60;time datetime="PT23H 9M 2.343S"&#62; which amounts
+            to a duration of 23 hours, 9 minutes, and 2.343 seconds.</p>
+        </section>
+
+        <section>
+            <h2>Mark</h2>
+            <p>The &#60;mark&#62; tag is used as a <mark>highlighter</mark>
+            performing the similar functions as <strong>strong</strong> and
+            <em>em</em>.</p>
+    </body>
+</html>
